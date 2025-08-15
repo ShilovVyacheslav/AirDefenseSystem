@@ -6,4 +6,4 @@ def world_to_screen(p, scale, offset):
 
 
 def screen_to_world(p, scale, offset):
-    return pygame.Vector2((p[0] - offset[0]) / scale, (p[1] - offset[1]) / scale)
+    return pygame.Vector2((p[0] - offset.x) / scale, (p[1] - offset.y) / scale)
