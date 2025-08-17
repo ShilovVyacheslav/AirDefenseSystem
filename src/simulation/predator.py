@@ -1,6 +1,7 @@
+from src.config import *
 from src.simulation.entity import Entity
 
 
 class Predator(Entity):
-    def __init__(self, pos, vel):
-        super().__init__(pos, vel, radius_world=0.15, color=(90, 180, 240))
+    def __init__(self, pos, vel, behavior=None):
+        super().__init__(pos, vel, radius_world=PREDATOR_RADIUS_WORLD, color=COLOR_PREDATOR, behavior=behavior)

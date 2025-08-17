@@ -3,13 +3,16 @@ from src.core.coordinate_system import world_to_screen
 
 
 class Entity:
-    def __init__(self, pos, vel, radius_world, color=(220, 220, 220)):
+    def __init__(self, pos, vel, radius_world, color, behavior=None):
         self.pos = pygame.Vector2(pos)
         self.vel = pygame.Vector2(vel)
         self.radius_world = radius_world
         self.color = color
+        self.behavior = behavior
 
-    def move(self, dt):
+    def move(self, dt, **kwargs):
+        if self.behavior:
+            self.vel = pygame.Vector2(self.behavior(self, dt, **kwargs))
         self.pos += self.vel * dt
 
     def draw(self, screen, scale, offset):
