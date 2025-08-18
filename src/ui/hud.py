@@ -1,4 +1,5 @@
 import pygame
+from src.config import *
 from src.core.coordinate_system import screen_to_world
 
 
@@ -18,6 +19,6 @@ def draw_hud(screen, W, H, scale, offset, pos, dt, clock, font):
     bg.fill((0, 0, 0, 110))
     screen.blit(bg, (0, y - 4))
     for line in info:
-        txt = font.render(line, True, (210, 210, 220))
+        txt = font.render(line, True, COLOR_TEXT)
         screen.blit(txt, (8, y))
         y += 18

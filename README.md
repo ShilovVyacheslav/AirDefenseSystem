@@ -22,8 +22,8 @@ This project is a **Python-based simulation** of an **Air Defense System (ADS)**
 
 ## 🛠 **Installation**  
 ```bash
-git clone https://github.com/yourusername/air-defense-sim.git  
-cd air-defense-sim  
+git clone https://github.com/ShilovVyacheslav/AirDefenseSystem.git
+cd AirDefenseSystem
 pip install -r requirements.txt  
 ```  
 
