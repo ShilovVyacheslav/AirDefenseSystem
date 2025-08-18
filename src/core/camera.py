@@ -4,7 +4,7 @@ from src.core.coordinate_system import screen_to_world
 
 
 class Camera:
-    def __init__(self, screen_size, initial_scale=80.0):
+    def __init__(self, screen_size, initial_scale=INITIAL_SCALE):
         self.scale = initial_scale
         self.offset = pygame.Vector2(screen_size[0] / 2, screen_size[1] / 2)
 
