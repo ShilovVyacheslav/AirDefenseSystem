@@ -19,5 +19,6 @@ class Entity:
         r_px = max(2, int(self.radius_world * scale))
         p_screen = world_to_screen(self.pos, scale, offset)
         pygame.draw.circle(screen, self.color, (int(p_screen.x), int(p_screen.y)), r_px)
-        v_end = world_to_screen(self.pos + self.vel.normalize(), scale, offset)
+        v_end = world_to_screen(self.pos + (self.vel.normalize() if self.vel.length_squared() else self.vel),
+                                scale, offset)
         pygame.draw.line(screen, self.color, p_screen, v_end, 2)

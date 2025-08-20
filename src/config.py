@@ -1,3 +1,6 @@
+import random
+import pygame
+
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 700
 FPS = 120
@@ -20,10 +23,11 @@ PREDATOR_RADIUS_WORLD = 0.15
 TARGET_START = (7, 3)
 PREDATOR_START = (-4, 3)
 
-TARGET_DIRECTION = (1.5, -3.5)
+TARGET_DIRECTION = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).normalize()
 
 TARGET_SPEED = 1.5
-PREDATOR_SPEED = 4
+PREDATOR_SPEED = 10
+SPEED_OPTIONS = [1.0, 2.0, 3.0, 4.0, 5.0]
 
 FONT_NAME = None
 FONT_SIZE = 18
