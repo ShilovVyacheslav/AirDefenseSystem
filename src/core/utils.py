@@ -10,3 +10,9 @@ def choose_grid_step(scale):
     base = 10 ** exp
     candidates = [base, 2 * base, 5 * base]
     return min(candidates, key=lambda c: abs(c - step_world))
+
+
+def flush_variables(entity):
+    for attr in ["maneuver_time", "maneuver_start_point", "target_detected", "phi_0"]:
+        if hasattr(entity, attr):
+            delattr(entity, attr)

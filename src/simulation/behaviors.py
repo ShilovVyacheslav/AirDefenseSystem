@@ -1,8 +1,6 @@
 import math
-import random
-
 import pygame
-from pygame import Vector2
+from src.core.utils import flush_variables
 
 
 def move_in_direction(entity, dt, **_):
@@ -10,12 +8,6 @@ def move_in_direction(entity, dt, **_):
     if d.length_squared() == 0:
         return pygame.Vector2(0, 0)
     return d.normalize() * entity.speed
-
-
-def flush_variables(entity):
-    for attr in ["maneuver_time", "maneuver_start_point", "target_detected", "phi_0"]:
-        if hasattr(entity, attr):
-            delattr(entity, attr)
 
 
 def pursue_in_spiral(entity, dt, *, target):
@@ -41,6 +33,8 @@ def pursue_in_spiral(entity, dt, *, target):
     if not hasattr(entity, "phi_0"):
         rel = entity.pos - pygame.Vector2(entity.target_detected)
         entity.phi_0 = math.atan2(rel.y, rel.x)
+
+    v_p *= 3
 
     t = entity.maneuver_time
 
