@@ -1,5 +1,11 @@
 # 🚀 **Air Defense System**  
 
+<p align="center">
+  <img src="src/assets/icons/app_icon.png" width="200" alt="Air Defense System Icon">
+  <br>
+  <em>Advanced Threat Detection & Interception Simulation</em>
+</p>
+
 **⚠️ WARNING: This project is for educational/research purposes only. No real-world military or defense application is intended or implied.**  
 
 ---
