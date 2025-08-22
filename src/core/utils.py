@@ -13,6 +13,8 @@ def choose_grid_step(scale):
 
 
 def flush_variables(entity):
+    if hasattr(entity, "last_positions"):
+        entity.last_positions.clear()
     for attr in ["maneuver_time", "maneuver_start_point", "target_detected", "phi_0"]:
         if hasattr(entity, attr):
             delattr(entity, attr)

@@ -34,7 +34,7 @@ def pursue_in_spiral(entity, dt, *, target):
         rel = entity.pos - pygame.Vector2(entity.target_detected)
         entity.phi_0 = math.atan2(rel.y, rel.x)
 
-    v_p *= 3
+    v_p *= 1.5
 
     t = entity.maneuver_time
 

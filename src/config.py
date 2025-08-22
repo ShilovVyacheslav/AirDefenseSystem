@@ -8,13 +8,14 @@ FPS = 120
 INITIAL_SCALE = 30.0
 
 COLOR_BG = (0, 0, 0)
+COLOR_GRID = (0, 40, 0)
 COLOR_GRID_MAJOR = (0, 40, 0)
 COLOR_GRID_MINOR = (0, 20, 0)
 COLOR_AXIS = (0, 100, 0)
-COLOR_TEXT = (0, 255, 0)
+COLOR_TEXT = (0, 255, 150)
 COLOR_HIGHLIGHT = (0, 200, 255)
 COLOR_ALERT = (0, 150, 100)
-COLOR_FRIENDLY = (0, 255, 150)
+COLOR_FRIENDLY = (0, 200, 255)
 
 COLOR_TARGET = (0, 255, 150)
 COLOR_PREDATOR = (0, 150, 100)
@@ -29,7 +30,7 @@ TARGET_DIRECTION = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).
 
 TARGET_SPEED = 1.5
 PREDATOR_SPEED = 10
-SPEED_OPTIONS = [1.0, 2.0, 3.0, 4.0, 5.0]
+SPEED_OPTIONS = [random.uniform(1, 9) for _ in range(7)]
 
 FONT_NAME_TITLE = 'orbitron'
 FONT_NAME_HUD = 'consolas'
