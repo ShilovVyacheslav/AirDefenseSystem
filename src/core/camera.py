@@ -1,4 +1,3 @@
-import pygame
 from src.config import *
 from src.core.coordinate_system import screen_to_world
 

@@ -1,4 +1,3 @@
-import pygame
 from src.config import *
 
 

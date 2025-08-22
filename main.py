@@ -1,4 +1,6 @@
-from src.app import run_simulation
+import pygame
+from src.app import main
 
 if __name__ == '__main__':
-    run_simulation()
+    pygame.init()
+    main()
