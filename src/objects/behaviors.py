@@ -1,6 +1,6 @@
 import math
 import pygame
-from src.core.utils import flush_variables
+from src.core.utils import flush_variables, calculate_total_maneuver_time
 
 
 def move_in_direction(entity, dt, **_):

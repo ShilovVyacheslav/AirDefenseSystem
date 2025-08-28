@@ -1,12 +1,11 @@
 import time
+
 from src.core.camera import Camera
-from src.core.utils import *
-from src.objects.target import Target
-from src.objects.predator import Predator
-from src.objects.behaviors import move_in_direction, pursue_in_spiral
+from src.core.entity_manager import EntityManager
 from src.ui.events import *
 from src.ui.grid import *
 from src.ui.hud import *
+from src.ui.matrix_overlay import MatrixOverlay
 
 
 class Simulation:
@@ -14,17 +13,17 @@ class Simulation:
         self.screen = None
         self.clock = None
         self.camera = None
-        self.target = None
-        self.predator = None
+        self.entity_manager = EntityManager()
         self.running = False
         self.dragging = False
         self.last_mouse = pygame.Vector2(0, 0)
         self.timer = 0
         self.engagement_status = "TRACKING"
+        self.matrix_overlay = MatrixOverlay()
 
     def initialize(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.NOFRAME)
+        self.screen = pygame.display.set_mode((config.WINDOW_WIDTH, config.WINDOW_HEIGHT), pygame.NOFRAME)
         pygame.display.set_caption('G.A.D.C.I. // Global Air Defense Command Interface')
         self.clock = pygame.time.Clock()
 
@@ -32,17 +31,17 @@ class Simulation:
         pygame.display.set_icon(icon)
         pygame.event.pump()
 
-        self.camera = Camera((WINDOW_WIDTH, WINDOW_HEIGHT))
-        self.reset_entities()
+        self.camera = Camera((config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
+        self.reset_entities("single")
 
-    def reset_entities(self):
-        self.target = Target(pos=pygame.Vector2(random.uniform(-10, 10), random.uniform(-10, 10)),
-                             behavior=move_in_direction)
-        self.predator = Predator(pos=pygame.Vector2(random.uniform(-10, 10), random.uniform(-10, 10)),
-                                 behavior=pursue_in_spiral)
+    def reset_entities(self, mode: str = "single"):
+        if mode == "single":
+            self.entity_manager.initialize_single_mode()
+        elif mode == "multiple":
+            self.entity_manager.initialize_multi_mode(count=7)
 
     def show_loading_screen(self):
-        self.screen.fill(COLOR_BG)
+        self.screen.fill(config.COLOR_BG)
         loading_texts = [
             "INITIALIZING G.A.D.C.I. PROTOCOL...",
             "LOADING TERRAIN DATA... OK",
@@ -52,18 +51,27 @@ class Simulation:
             "WELCOME, COMMANDER."
         ]
         for i, text in enumerate(loading_texts):
-            self.screen.fill(COLOR_BG)
+            self.screen.fill(config.COLOR_BG)
             for j in range(i + 1):
-                txt = font_large.render(loading_texts[j], True, COLOR_TEXT)
-                self.screen.blit(txt, (WINDOW_WIDTH // 2 - txt.get_width() // 2,
-                                       WINDOW_HEIGHT // 2 - (len(loading_texts) * 20) // 2 + j * 30))
+                txt = config.font_large.render(loading_texts[j], True, config.COLOR_TEXT)
+                self.screen.blit(txt, (config.WINDOW_WIDTH // 2 - txt.get_width() // 2,
+                                       config.WINDOW_HEIGHT // 2 - (len(loading_texts) * 20) // 2 + j * 30))
             pygame.display.flip()
             time.sleep(0.5)
         time.sleep(0.5)
 
     def handle_input(self):
         for event in pygame.event.get():
-            self.running = handle_event(event, self.camera, (WINDOW_WIDTH, WINDOW_HEIGHT))
+            self.running = handle_event(event, self.camera, (config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    self.reset_entities("single")
+                elif event.key == pygame.K_2:
+                    self.reset_entities("multiple")
+                elif event.key == pygame.K_TAB:
+                    config.cycle_style()
+                elif event.key == pygame.K_m:
+                    self.matrix_overlay.toggle()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 self.dragging = True
                 self.last_mouse = pygame.Vector2(pygame.mouse.get_pos())
@@ -79,40 +87,35 @@ class Simulation:
 
     def update_state(self, dt: float):
         self.timer += dt
-        self.target.move(dt)
-        self.predator.move(dt, target=self.target)
-        distance = (self.target.pos - self.predator.pos).length()
-        if distance < 0.5:
-            self.engagement_status = "ENGAGED"
-        elif distance < 2.0:
-            self.engagement_status = "CLOSING"
-        else:
-            self.engagement_status = "TRACKING"
-        if self.predator.has_captured(self.target):
-            flush_variables(self.predator)
-            if hasattr(self.predator, "_v_index"):
-                delattr(self.predator, "_v_index")
-            self.target = Target(pos=pygame.Vector2(random.uniform(-10, 10), random.uniform(-10, 10)),
-                                 behavior=move_in_direction)
+        self.entity_manager.update(dt)
+        self.entity_manager.check_collisions()
+        self.update_engagement_status()
+
+    def update_engagement_status(self):
+        if self.entity_manager.mode == "single":
+            distance = (self.entity_manager.targets[0].pos - self.entity_manager.predators[0].pos).length()
+            if distance < 0.5:
+                self.engagement_status = "ENGAGED"
+            elif distance < 2.0:
+                self.engagement_status = "CLOSING"
+            else:
+                self.engagement_status = "TRACKING"
+        elif self.entity_manager.mode == "multiple":
+            self.engagement_status = "MULTI-TRACKING"
 
     def render(self, dt: float):
-        draw_grid(self.screen, WINDOW_WIDTH, WINDOW_HEIGHT, self.camera.scale, self.camera.offset)
-        self.target.draw(self.screen, self.camera.scale, self.camera.offset)
-        self.predator.draw(self.screen, self.camera.scale, self.camera.offset)
-        if hasattr(self.predator, "target_detected"):
-            target_detected = world_to_screen(pygame.Vector2(self.predator.target_detected),
-                                              self.camera.scale, self.camera.offset)
-            pygame.draw.circle(self.screen, COLOR_ALERT,
-                               (int(target_detected.x), int(target_detected.y)), 4)
-        draw_hud(self.screen, WINDOW_WIDTH, WINDOW_HEIGHT, self.camera.scale, self.camera.offset,
-                 self.target, self.predator, dt, self.clock, self.engagement_status)
+        draw_grid(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset)
+        self.entity_manager.draw(self.screen, self.camera.scale, self.camera.offset)
+        draw_hud(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset,
+                 self.entity_manager, dt, self.clock, self.engagement_status)
+        self.matrix_overlay.draw(self.screen, self.entity_manager)
 
     def run(self):
         self.initialize()
         self.show_loading_screen()
         self.running = True
         while self.running:
-            dt = min(self.clock.tick(FPS) / 1000.0, 0.016)
+            dt = min(self.clock.tick(config.FPS) / 1000.0, 0.016)
             self.handle_input()
             self.update_dragging()
             self.update_state(dt)
