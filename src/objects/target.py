@@ -24,3 +24,9 @@ class Target(Entity):
         v = config.pygame.Vector2(config.random.uniform(-1, 1), config.random.uniform(-1, 1))
         self.direction = v.normalize() if v.length_squared() > 0 else config.pygame.Vector2(1, 0)
         return self.pos.copy()
+
+    def get_direction(self):
+        return self.direction.copy()
+
+    def get_speed(self):
+        return self.speed

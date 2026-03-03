@@ -39,6 +39,8 @@ class Simulation:
             self.entity_manager.initialize_single_mode()
         elif mode == "multiple":
             self.entity_manager.initialize_multi_mode(count=7)
+        elif mode == "circle":
+            self.entity_manager.initialize_circle_mode(count=25)
 
     def show_loading_screen(self):
         self.screen.fill(config.COLOR_BG)
@@ -68,6 +70,8 @@ class Simulation:
                     self.reset_entities("single")
                 elif event.key == pygame.K_2:
                     self.reset_entities("multiple")
+                elif event.key == pygame.K_3:
+                    self.reset_entities("circle")
                 elif event.key == pygame.K_TAB:
                     config.cycle_style()
                 elif event.key == pygame.K_m:
@@ -102,6 +106,9 @@ class Simulation:
                 self.engagement_status = "TRACKING"
         elif self.entity_manager.mode == "multiple":
             self.engagement_status = "MULTI-TRACKING"
+        elif self.entity_manager.mode == "circle":
+            remaining = len(self.entity_manager.targets)
+            self.engagement_status = f"CIRCLE MODE: {remaining + 1} TARGETS"
 
     def render(self, dt: float):
         draw_grid(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset)

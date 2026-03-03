@@ -11,6 +11,8 @@ class Predator(Entity):
         self.speed = config.PREDATOR_SPEED
         self.V = sorted(config.SPEED_OPTIONS)
         self.assumed_speed = 0.0
+        self.D_0 = 0.0
+        self.alpha = 0.0
 
     def draw(self, screen, scale, offset):
         super().draw(screen, scale, offset)

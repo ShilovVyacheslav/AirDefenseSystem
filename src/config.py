@@ -91,7 +91,7 @@ v = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
 TARGET_DIRECTION = v.normalize() if v.length_squared() > 0 else pygame.Vector2(1, 0)
 
 TARGET_SPEED = 1.5
-PREDATOR_SPEED = 10
+PREDATOR_SPEED = 25
 SPEED_OPTIONS = [random.uniform(1, 9) for _ in range(7)]
 
 FONT_NAME_TITLE = 'orbitron'

@@ -1,3 +1,4 @@
+import math
 import random
 from typing import List, Dict
 
@@ -9,7 +10,8 @@ import src.config as config
 from src.core.coordinate_system import world_to_screen
 from src.core.hungarian_algorithm import hungarian_algorithm
 from src.core.utils import flush_variables, calculate_total_maneuver_time
-from src.objects.behaviors import move_in_direction, pursue_in_spiral
+from src.objects.behaviors import move_in_direction, pursue_in_spiral, pursue_in_curve, \
+    pursue_in_curve_by_numerical_methods
 from src.objects.predator import Predator
 from src.objects.target import Target
 
@@ -45,9 +47,42 @@ class EntityManager:
                 Predator(pos=pygame.Vector2(random.uniform(-20, 20), random.uniform(-20, 20)),
                          behavior=pursue_in_spiral)
             )
-        #self.assign_targets(count)
         self.apply_hungarian_assignment(count)
         self.mode = "multiple"
+
+    def initialize_circle_mode(self, count: int = 25, center=(0.0, 0.0)):
+        self.clear_entities()
+        predator = Predator(pos=pygame.Vector2(center), behavior=pursue_in_curve)
+        radius = random.uniform(10, 50)
+        alpha = random.uniform(0, 2 * math.pi)
+        v1 = config.random.choice(config.SPEED_OPTIONS)
+        predator.D_0 = radius
+        predator.alpha = alpha
+        predator.assumed_speed = v1
+        self.predators.append(predator)
+        for i in range(count):
+            angle = (2 * np.pi * i) / count
+            x = center[0] + radius * np.cos(angle)
+            y = center[1] + radius * np.sin(angle)
+            target = Target(
+                pos=pygame.Vector2(x, y),
+                behavior=move_in_direction
+            )
+            target.speed = v1
+            target.direction = config.pygame.math.Vector2(np.cos(alpha), np.sin(alpha))
+            self.targets.append(target)
+            self.assignments[target] = predator
+
+        target = Target(
+            pos=pygame.Vector2(center[0] + radius * (-np.cos(alpha)), center[1] + radius * (-np.sin(alpha))),
+            behavior=move_in_direction
+        )
+        target.speed = v1
+        target.direction = config.pygame.math.Vector2(np.cos(alpha), np.sin(alpha))
+        self.targets.append(target)
+        self.assignments[target] = predator
+
+        self.mode = "circle"
 
     def assign_targets(self, count):
         self.assignments.clear()
@@ -77,16 +112,18 @@ class EntityManager:
         self.predators.clear()
         self.assignments.clear()
 
-    def switch_mode(self, new_mode: str, count: int = 5):
-        if new_mode == "single":
-            self.initialize_single_mode()
-        elif new_mode == "multiple":
-            self.initialize_multi_mode(count)
-
     def update(self, dt: float):
-        for target, predator in self.assignments.items():
+        for target in self.targets:
             target.move(dt)
-            predator.move(dt, target=target)
+        for predator in self.predators:
+            assigned_targets = [t for t, p in self.assignments.items() if p == predator]
+            if assigned_targets:
+                predator.move(dt, target=assigned_targets[0])
+            else:
+                predator.move(dt)
+        if self.mode == "circle":
+            if not hasattr(self.predators[0], "target_detected"):
+                self.initialize_circle_mode(center=self.predators[0].pos)
 
     def check_collisions(self):
         if self.mode == "single":
@@ -104,12 +141,31 @@ class EntityManager:
                                 for target, predator in self.assignments.items()
                                 if predator.has_captured(target)]
             for target in captured_targets:
-                del self.assignments[target]
+                if target in self.targets:
+                    self.targets.remove(target)
+                predator = self.assignments[target]
+                if predator in self.predators:
+                    self.predators.remove(predator)
+                if target in self.assignments:
+                    del self.assignments[target]
+        elif self.mode == "circle":
+            captured_targets = [target
+                                for target, predator in self.assignments.items()
+                                if predator.has_captured(target)]
+            for target in captured_targets:
+                if target in self.targets:
+                    self.targets.remove(target)
+                if target in self.assignments:
+                    del self.assignments[target]
 
     def draw(self, screen, scale, offset):
-        for target, predator in self.assignments.items():
+        for target in self.targets:
             target.draw(screen, scale, offset)
+        for predator in self.predators:
             predator.draw(screen, scale, offset)
             if hasattr(predator, "target_detected"):
                 target_detected = world_to_screen(pygame.Vector2(predator.target_detected), scale, offset)
                 pygame.draw.circle(screen, config.COLOR_ALERT, target_detected, 4)
+            if hasattr(predator, "D_0"):
+                start_position = world_to_screen(pygame.Vector2(predator.last_positions[0] if len(predator.last_positions) else predator.pos), scale, offset)
+                pygame.draw.circle(screen, config.COLOR_ALERT, start_position, int(predator.D_0 * scale), 1)
