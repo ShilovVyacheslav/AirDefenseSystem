@@ -1,171 +1,122 @@
 import math
-import random
-from typing import List, Dict
 
 import numpy as np
 import pygame
 
 import src.config as config
 
+from src.core.bottleneck_algorithm import bottleneck_algorithm
 from src.core.coordinate_system import world_to_screen
-from src.core.hungarian_algorithm import hungarian_algorithm
-from src.core.utils import flush_variables, calculate_total_maneuver_time
-from src.objects.behaviors import move_in_direction, pursue_in_spiral, pursue_in_curve, \
-    pursue_in_curve_by_numerical_methods
+from src.core.utils import calculate_total_spiral_time, get_random_point, calculate_total_enumeration_spiral_time
+from src.objects.behaviors import move_in_direction, pursue_in_spiral, pursue_in_circle
 from src.objects.predator import Predator
-from src.objects.target import Target
+from src.objects.evader import Evader
+from typing import List, Dict
 
 
 class EntityManager:
     def __init__(self):
-        self.targets: List[Target] = []
+        self.evaders: List[Evader] = []
         self.predators: List[Predator] = []
-        self.mode: str = "single"
-        self.assignments: Dict[Target, Predator] = {}
-        self.cost_matrix = None
-        self.assignment = None
+        self.mode: str = "single_spiral"
+        self.assignments: Dict[Evader, Predator] = {}
 
-    def initialize_single_mode(self):
+    def initialize_single_spiral_mode(self, initial=False):
         self.clear_entities()
-        target = Target(pos=pygame.Vector2(random.uniform(-10, 10), random.uniform(-10, 10)),
-                        behavior=move_in_direction)
-        predator = Predator(pos=pygame.Vector2(random.uniform(-10, 10), random.uniform(-10, 10)),
-                            behavior=pursue_in_spiral)
-        self.targets.append(target)
+        E_0 = config.E_0
+        if initial:
+            evader = Evader(pos=config.E_0, speed=config.v, alpha=config.alpha, behavior=move_in_direction)
+            predator = Predator(pos=config.P_0, behavior=pursue_in_spiral)
+        else:
+            evader = Evader(pos=get_random_point(), behavior=move_in_direction)
+            E_0 = evader.pos.copy()
+            predator = Predator(pos=get_random_point(), behavior=pursue_in_spiral)
+        predator.C_0 = E_0
+        self.evaders.append(evader)
         self.predators.append(predator)
-        self.assignments[target] = predator
-        self.mode = "single"
+        self.assignments[evader] = predator
+        self.mode = "single_spiral"
 
-    def initialize_multi_mode(self, count: int = 5):
+        return calculate_total_enumeration_spiral_time(predator.pos.distance_to(evader.pos),
+                                                       predator.speed, predator.V_E)
+
+    def initialize_multiple_spiral_mode(self, count: int = 5):
         self.clear_entities()
+        '''
         for _ in range(count):
-            self.targets.append(
-                Target(pos=pygame.Vector2(random.uniform(-20, 20), random.uniform(-20, 20)),
-                       behavior=move_in_direction)
-            )
-            self.predators.append(
-                Predator(pos=pygame.Vector2(random.uniform(-20, 20), random.uniform(-20, 20)),
-                         behavior=pursue_in_spiral)
-            )
-        self.apply_hungarian_assignment(count)
-        self.mode = "multiple"
+            self.evaders.append(Evader(pos=get_random_point(-20, +20, -20, +20), behavior=move_in_direction))
+            self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20), behavior=pursue_in_spiral))
+        self.apply_bottleneck_assignment(count, calculate_total_spiral_time)
+        '''
+        self.mode = "multiple_spiral"
 
-    def initialize_circle_mode(self, count: int = 25, center=(0.0, 0.0)):
+    def initialize_single_circle_mode(self, initial=False):
         self.clear_entities()
-        predator = Predator(pos=pygame.Vector2(center), behavior=pursue_in_curve)
-        radius = random.uniform(10, 50)
-        alpha = random.uniform(0, 2 * math.pi)
-        v1 = config.random.choice(config.SPEED_OPTIONS)
-        predator.D_0 = radius
-        predator.alpha = alpha
-        predator.assumed_speed = v1
+        C_0 = config.C_0
+        D_0 = config.D_0
+        if initial:
+            predator = Predator(pos=config.P_0, behavior=pursue_in_circle)
+            evader = Evader(pos=config.C_0 + config.D_0 * pygame.Vector2(math.cos(config.beta), math.sin(config.beta)),
+                            speed=config.v, behavior=move_in_direction)
+        else:
+            predator = Predator(pos=get_random_point(), behavior=pursue_in_circle)
+            C_0 = get_random_point()
+            D_0 = config.random.uniform(20, 80)
+            evader = Evader(pos=C_0 + D_0 * get_random_point().normalize(),
+                            behavior=move_in_direction)
+        predator.C_0 = C_0
+        predator.D_0 = D_0
+        self.evaders.append(evader)
         self.predators.append(predator)
-        for i in range(count):
-            angle = (2 * np.pi * i) / count
-            x = center[0] + radius * np.cos(angle)
-            y = center[1] + radius * np.sin(angle)
-            target = Target(
-                pos=pygame.Vector2(x, y),
-                behavior=move_in_direction
-            )
-            target.speed = v1
-            target.direction = config.pygame.math.Vector2(np.cos(alpha), np.sin(alpha))
-            self.targets.append(target)
-            self.assignments[target] = predator
+        self.assignments[evader] = predator
+        self.mode = "single_circle"
 
-        target = Target(
-            pos=pygame.Vector2(center[0] + radius * (-np.cos(alpha)), center[1] + radius * (-np.sin(alpha))),
-            behavior=move_in_direction
-        )
-        target.speed = v1
-        target.direction = config.pygame.math.Vector2(np.cos(alpha), np.sin(alpha))
-        self.targets.append(target)
-        self.assignments[target] = predator
+    def initialize_multiple_circle_mode(self, count: int = 5):
+        self.clear_entities()
+        self.mode = "multiple_circle"
 
-        self.mode = "circle"
-
-    def assign_targets(self, count):
-        self.assignments.clear()
-        self.assignments = {self.targets[i]: self.predators[i] for i in range(count)}
-
-    def apply_hungarian_assignment(self, count: int):
+    def apply_bottleneck_assignment(self, count: int, calculate_total_time):
         self.assignments.clear()
         cost_matrix = np.zeros((count, count))
         for i, predator in enumerate(self.predators):
-            for j, target in enumerate(self.targets):
-                time = calculate_total_maneuver_time(
-                    predator.pos, target.pos, predator.speed, target.speed
-                )
+            for j, evader in enumerate(self.evaders):
+                time = calculate_total_time(predator.pos, evader.pos, predator.speed, evader.speed)
                 cost_matrix[i, j] = time if time != float('inf') else 999999
-        self.cost_matrix = cost_matrix
-        assignment = hungarian_algorithm(cost_matrix)
-        self.assignment = assignment
-        for predator_idx, target_idx in assignment:
-            if (predator_idx < len(self.predators) and
-                    target_idx < len(self.targets)):
+        assignment = bottleneck_algorithm(cost_matrix)
+        for predator_idx, evader_idx in assignment:
+            if predator_idx < len(self.predators) and evader_idx < len(self.evaders):
                 predator = self.predators[predator_idx]
-                target = self.targets[target_idx]
-                self.assignments[target] = predator
+                evader = self.evaders[evader_idx]
+                self.assignments[evader] = predator
 
     def clear_entities(self):
-        self.targets.clear()
+        self.evaders.clear()
         self.predators.clear()
         self.assignments.clear()
 
     def update(self, dt: float):
-        for target in self.targets:
-            target.move(dt)
-        for predator in self.predators:
-            assigned_targets = [t for t, p in self.assignments.items() if p == predator]
-            if assigned_targets:
-                predator.move(dt, target=assigned_targets[0])
-            else:
-                predator.move(dt)
-        if self.mode == "circle":
-            if not hasattr(self.predators[0], "target_detected"):
-                self.initialize_circle_mode(center=self.predators[0].pos)
+        for evader, predator in self.assignments.items():
+            evader.move(dt)
+            predator.move(dt)
 
     def check_collisions(self):
-        if self.mode == "single":
-            target = self.targets[0]
+        if self.mode == "single_spiral" or self.mode == "single_circle":
+            evader = self.evaders[0]
             predator = self.predators[0]
-            if predator.has_captured(target):
-                flush_variables(predator)
-                if hasattr(predator, "_v_index"):
-                    delattr(predator, "_v_index")
-                self.targets[0] = Target(pos=pygame.Vector2(random.uniform(-10, 10), random.uniform(-10, 10)),
-                                         behavior=move_in_direction)
-                self.assign_targets(1)
-        elif self.mode == "multiple":
-            captured_targets = [target
-                                for target, predator in self.assignments.items()
-                                if predator.has_captured(target)]
-            for target in captured_targets:
-                if target in self.targets:
-                    self.targets.remove(target)
-                predator = self.assignments[target]
-                if predator in self.predators:
-                    self.predators.remove(predator)
-                if target in self.assignments:
-                    del self.assignments[target]
-        elif self.mode == "circle":
-            captured_targets = [target
-                                for target, predator in self.assignments.items()
-                                if predator.has_captured(target)]
-            for target in captured_targets:
-                if target in self.targets:
-                    self.targets.remove(target)
-                if target in self.assignments:
-                    del self.assignments[target]
+            if predator.has_captured(evader):
+                pass
 
     def draw(self, screen, scale, offset):
-        for target in self.targets:
-            target.draw(screen, scale, offset)
-        for predator in self.predators:
+        for evader, predator in self.assignments.items():
+            evader.draw(screen, scale, offset)
             predator.draw(screen, scale, offset)
-            if hasattr(predator, "target_detected"):
-                target_detected = world_to_screen(pygame.Vector2(predator.target_detected), scale, offset)
-                pygame.draw.circle(screen, config.COLOR_ALERT, target_detected, 4)
-            if hasattr(predator, "D_0"):
-                start_position = world_to_screen(pygame.Vector2(predator.last_positions[0] if len(predator.last_positions) else predator.pos), scale, offset)
-                pygame.draw.circle(screen, config.COLOR_ALERT, start_position, int(predator.D_0 * scale), 1)
+            if self.mode == "single_spiral":
+                reference_point = world_to_screen(pygame.Vector2(predator.reference_point), scale, offset)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+            elif self.mode == "single_circle":
+                reference_point = world_to_screen(predator.C_0, scale, offset)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+                reference_point = world_to_screen(predator.reference_point, scale, offset)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)

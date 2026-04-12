@@ -3,7 +3,7 @@ import src.config as config
 from src.core.coordinate_system import screen_to_world
 
 
-def draw_hud(screen, W, H, scale, offset, entity_manager, dt, clock, engagement_status):
+def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interception_time, clock):
     mouse = config.pygame.mouse.get_pos()
     w = screen_to_world(mouse, scale, offset)
     mode = entity_manager.mode
@@ -12,7 +12,6 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, clock, engagement_
         f"> OPERATIONAL READINESS: 100%",
         f"> NETWORK: SECURE",
         f"> MODE: {'SINGLE TRACKING' if mode == 'single' else 'MULTI-TRACKING'}",
-        f"> ENGAGEMENT: {engagement_status}",
     ]
     if mode == 'single':
         target = entity_manager.targets[0] if entity_manager.targets else None
@@ -35,7 +34,7 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, clock, engagement_
     info_bottom = [
         f"SCALE: {scale:.1f} px/unit",
         f"WORLD CURSOR: ({w.x:.2f}, {w.y:.2f})",
-        f"DT: {dt * 1000:.1f}ms | FPS: {clock.get_fps():.1f}",
+        f"TIME: {timer:.3f}s / {interception_time:.3f}s | DT: {dt * 1000:.1f}ms | FPS: {clock.get_fps():.1f}",
         "CONTROLS: [RMB] PAN | [SCROLL] ZOOM | [SPACE] RESET VIEW",
         "MATRIX: [M] TOGGLE OVERLAY",
         f"MODE: [1] SINGLE | [2] MULTIPLE",
@@ -59,7 +58,4 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, clock, engagement_
     for i, line in enumerate(info_bottom):
         txt = config.font_small.render(line, True, config.COLOR_TEXT)
         screen.blit(txt, (10, y + 5 + i * line_height))
-    if "ENGAGED" in engagement_status:
-        alert_text = config.font_large.render("TARGET ACQUIRED", True, config.COLOR_ALERT)
-        screen.blit(alert_text, (W // 2 - alert_text.get_width() // 2, H // 2 - 50))
     config.pygame.draw.rect(screen, config.COLOR_GRID_MAJOR, (0, 0, W, H), 2)

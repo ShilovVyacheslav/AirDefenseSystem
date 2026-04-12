@@ -1,9 +1,12 @@
+import math
 import random
 import pygame
 
+from src.core.utils import get_random_point
+
 WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 800
-FPS = 120
+FPS = 250
 
 INITIAL_SCALE = 30.0
 
@@ -81,18 +84,24 @@ def cycle_style():
     return set_style(styles[next_index])
 
 
-TARGET_RADIUS_WORLD = 0.4
+EVADER_RADIUS_WORLD = 0.4
 PREDATOR_RADIUS_WORLD = 0.3
 
-TARGET_START = (7, 3)
-PREDATOR_START = (-4, 3)
+P_0 = pygame.Vector2(0, 0)#get_random_point()
+E_0 = get_random_point()
+C_0 = pygame.Vector2(0, 0)#get_random_point()
 
-v = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
-TARGET_DIRECTION = v.normalize() if v.length_squared() > 0 else pygame.Vector2(1, 0)
+k = 5
+m = 5
 
-TARGET_SPEED = 1.5
-PREDATOR_SPEED = 25
-SPEED_OPTIONS = [random.uniform(1, 9) for _ in range(7)]
+A_E = [math.pi]#[random.uniform(0, 2*math.pi) for _ in range(k)]
+V_E = [2.0]#[random.uniform(1, 5) for _ in range(m)]
+v = min(V_E)
+V_P = 7.0#25.0
+
+D_0 = 5.0
+beta = math.radians(-72)
+alpha = random.choice(A_E)
 
 FONT_NAME_TITLE = 'orbitron'
 FONT_NAME_HUD = 'consolas'

@@ -1,6 +1,6 @@
 import pygame
 from src.config import font_small, COLOR_TEXT, COLOR_HIGHLIGHT
-from src.core.utils import calculate_total_maneuver_time
+from src.core.utils import calculate_total_spiral_time
 
 
 class MatrixOverlay:
@@ -14,7 +14,7 @@ class MatrixOverlay:
         self.visible = not self.visible
 
     def draw(self, screen, entity_manager):
-        if not self.visible or not entity_manager or entity_manager.mode != "multiple":
+        if not self.visible or not entity_manager or entity_manager.mode[:5] != "multi":
             return
 
         predators = entity_manager.predators
