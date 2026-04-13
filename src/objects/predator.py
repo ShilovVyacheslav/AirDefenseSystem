@@ -22,8 +22,6 @@ class Predator(Entity):
         self.A_E = config.A_E
         self.l = 0
         self.assumed_angle = 0.0
-        self.D_0 = 0.0
-        self.C_0 = pygame.Vector2(0, 0)
 
     def draw(self, screen, scale, offset):
         draw_predator(self, screen, scale, offset)

@@ -10,28 +10,24 @@ def get_random_point(a=-10, b=10, c=-10, d=10):
     return pygame.Vector2(random.uniform(a, b), random.uniform(c, d))
 
 
-def choose_grid_step(scale):
-    target_px = 100
-    step_world = target_px / scale
-    if step_world <= 0:
-        return 1.0
-    exp = math.floor(math.log10(step_world))
-    base = 10 ** exp
-    candidates = [base, 2 * base, 5 * base]
-    return min(candidates, key=lambda c: abs(c - step_world))
-
-
-def calculate_total_spiral_time(pos_pred, pos_target, v_p, v_1):
-    if v_p <= v_1:
+def calculate_spiral_time(predator, evader):
+    V_P, v_1 = predator.speed, evader.speed
+    if V_P <= v_1:
         return float('inf')
-    D_0 = pygame.Vector2(pos_target).distance_to(pos_pred)
-    t_1 = D_0 / (v_1 + v_p)
-    sqrt_part = math.sqrt(v_p ** 2 - v_1 ** 2)
-    t_end = t_1 * math.exp((2 * math.pi * v_1) / sqrt_part)
-    return t_end
+    D_0 = pygame.Vector2(predator.pos).distance_to(evader.C_0)
+    t_1 = D_0 / (v_1 + V_P)
+    sqrt_part = math.sqrt(V_P ** 2 - v_1 ** 2)
+    t_2pi = t_1 * math.exp((2 * math.pi * v_1) / sqrt_part)
+    return t_2pi
 
 
-def calculate_total_enumeration_spiral_time(D_0, V_P, V_E):
+def calculate_circular_time(predator, evader):
+    return (calculate_circular_touchdown_time(predator.pos, evader.C_0, evader.D_0, predator.speed,
+                                              evader.speed, math.atan2(evader.direction.y, evader.direction.x)) +
+            calculate_circular_revolution_time(evader.D_0, predator.speed, evader.speed))
+
+
+def calculate_enumeration_spiral_time(D_0, V_P, V_E):
     m = len(V_E)
     t_1, t_2pi, d = [0.0] * (m + 1), [0.0] * (m + 1), [0.0] * (m + 1)
     for k in range(1, m + 1):
@@ -42,6 +38,9 @@ def calculate_total_enumeration_spiral_time(D_0, V_P, V_E):
             d[k] = (V_E[k - 2] - v_k) * t_2pi[k - 1]
         t_1[k] = t_2pi[k - 1] + abs(d[k]) / (V_P + v_k * np.sign(d[k]))
         t_2pi[k] = t_1[k] * math.exp((2 * math.pi * v_k) / math.sqrt(V_P**2 - v_k**2))
+    T = (math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(m)])) * D_0 / (V_P + V_E[0]) *
+         math.prod([1 + abs(V_E[k] - V_E[k + 1]) / (V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k + 1])
+                    for k in range(m - 1)]))
     return t_2pi[m]
 
 

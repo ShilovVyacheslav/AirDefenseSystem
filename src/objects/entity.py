@@ -2,7 +2,6 @@ import random
 
 import pygame
 
-from src.objects.behaviors import move_in_direction
 from src.ui.entity import draw, draw_trail
 
 
@@ -14,6 +13,8 @@ class Entity:
         self.radius_world = radius_world
         self.color = color
         self.behavior = behavior
+        self.D_0 = 0.0
+        self.C_0 = pygame.Vector2(0, 0)
         self.last_positions = []
         self.track_id = random.randint(1000, 9999)
 

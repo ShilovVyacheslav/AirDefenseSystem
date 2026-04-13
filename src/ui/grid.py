@@ -1,7 +1,6 @@
 import math
 import src.config as config
 from src.core.coordinate_system import screen_to_world, world_to_screen
-from src.core.utils import choose_grid_step
 
 
 def draw_grid(screen, W, H, scale, offset):
@@ -36,3 +35,14 @@ def draw_grid(screen, W, H, scale, offset):
         config.pygame.draw.line(screen, color, (0, ys), (W, ys), 1)
         txt = config.font_small.render(f"{y:g}", True, config.COLOR_TEXT)
         screen.blit(txt, (2, ys + 2))
+
+
+def choose_grid_step(scale):
+    target_px = 100
+    step_world = target_px / scale
+    if step_world <= 0:
+        return 1.0
+    exp = math.floor(math.log10(step_world))
+    base = 10 ** exp
+    candidates = [base, 2 * base, 5 * base]
+    return min(candidates, key=lambda c: abs(c - step_world))

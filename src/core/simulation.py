@@ -37,11 +37,11 @@ class Simulation:
         if mode == "single_spiral":
             self.interception_time = self.entity_manager.initialize_single_spiral_mode(initial=False)
         elif mode == "multiple_spiral":
-            self.entity_manager.initialize_multiple_spiral_mode(count=7)
+            self.interception_time = self.entity_manager.initialize_multiple_spiral_mode(count=7)
         elif mode == "single_circle":
-            self.entity_manager.initialize_single_circle_mode(initial=True)
+            self.interception_time = self.entity_manager.initialize_single_circle_mode(initial=True)
         elif mode == "multiple_circle":
-            self.entity_manager.initialize_multiple_circle_mode(count=4)
+            self.interception_time = self.entity_manager.initialize_multiple_circle_mode(count=7)
         self.timer = 0
 
     def show_loading_screen(self):
