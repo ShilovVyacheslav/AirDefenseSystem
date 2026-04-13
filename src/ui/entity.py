@@ -51,8 +51,7 @@ def draw_evader(evader, screen, scale, offset):
     p_screen = world_to_screen(evader.pos, scale, offset)
     r_px = max(3, int(evader.radius_world * scale))
     square_size = r_px * 1.4
-    config.pygame.draw.rect(screen, evader.color,
-                            (p_screen.x - square_size / 2, p_screen.y - square_size / 2,
-                      square_size, square_size), 2)
-    id_text = config.font_small.render(f"T-{evader.track_id}", True, evader.color)
+    config.pygame.draw.rect(screen, evader.color, (p_screen.x - square_size / 2, p_screen.y - square_size / 2,
+                                                   square_size, square_size), 2)
+    id_text = config.font_small.render(f"E-{evader.track_id}", True, evader.color)
     screen.blit(id_text, (p_screen.x + square_size + 2, p_screen.y - id_text.get_height() / 2))

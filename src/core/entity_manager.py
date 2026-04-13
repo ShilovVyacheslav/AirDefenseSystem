@@ -8,7 +8,7 @@ import src.config as config
 from src.core.bottleneck_algorithm import bottleneck_algorithm
 from src.core.coordinate_system import world_to_screen
 from src.core.utils import calculate_total_spiral_time, get_random_point, calculate_total_enumeration_spiral_time
-from src.objects.behaviors import move_in_direction, pursue_in_spiral, pursue_in_circle
+from src.objects.behaviors import move_in_direction, pursue_in_spiral, pursue_in_circular
 from src.objects.predator import Predator
 from src.objects.evader import Evader
 from typing import List, Dict
@@ -55,11 +55,11 @@ class EntityManager:
         C_0 = config.C_0
         D_0 = config.D_0
         if initial:
-            predator = Predator(pos=config.P_0, behavior=pursue_in_circle)
+            predator = Predator(pos=config.P_0, behavior=pursue_in_circular)
             evader = Evader(pos=config.C_0 + config.D_0 * pygame.Vector2(math.cos(config.beta), math.sin(config.beta)),
                             speed=config.v, behavior=move_in_direction)
         else:
-            predator = Predator(pos=get_random_point(), behavior=pursue_in_circle)
+            predator = Predator(pos=get_random_point(), behavior=pursue_in_circular)
             C_0 = get_random_point()
             D_0 = config.random.uniform(20, 80)
             evader = Evader(pos=C_0 + D_0 * get_random_point().normalize(),

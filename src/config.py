@@ -10,6 +10,25 @@ FPS = 250
 
 INITIAL_SCALE = 30.0
 
+EVADER_RADIUS_WORLD = 0.4
+PREDATOR_RADIUS_WORLD = 0.3
+
+P_0 = pygame.Vector2(0, 0)#get_random_point()
+E_0 = get_random_point()
+C_0 = pygame.Vector2(0, 0)#get_random_point()
+
+k = 2
+m = 3
+
+A_E = [random.uniform(0, 2*math.pi) for _ in range(k)]
+V_E = [random.uniform(1.0, 5.0) for _ in range(m)]
+v = min(V_E)
+V_P = 25.0
+
+D_0 = 5.0
+beta = math.radians(-72)
+alpha = random.choice(A_E)
+
 STYLES = {
     "gadci": {
         "COLOR_BG": (0, 0, 0),
@@ -83,25 +102,6 @@ def cycle_style():
     next_index = (current_index + 1) % len(styles)
     return set_style(styles[next_index])
 
-
-EVADER_RADIUS_WORLD = 0.4
-PREDATOR_RADIUS_WORLD = 0.3
-
-P_0 = pygame.Vector2(0, 0)#get_random_point()
-E_0 = get_random_point()
-C_0 = pygame.Vector2(0, 0)#get_random_point()
-
-k = 5
-m = 5
-
-A_E = [math.pi]#[random.uniform(0, 2*math.pi) for _ in range(k)]
-V_E = [2.0]#[random.uniform(1, 5) for _ in range(m)]
-v = min(V_E)
-V_P = 7.0#25.0
-
-D_0 = 5.0
-beta = math.radians(-72)
-alpha = random.choice(A_E)
 
 FONT_NAME_TITLE = 'orbitron'
 FONT_NAME_HUD = 'consolas'
