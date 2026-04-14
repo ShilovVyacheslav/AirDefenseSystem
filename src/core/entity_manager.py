@@ -31,6 +31,7 @@ class EntityManager:
         else:
             evader = Evader(pos=get_random_point(), behavior=move_in_direction)
             predator = Predator(pos=get_random_point(), behavior=pursue_in_spiral)
+        evader.C_0 = evader.pos.copy()
         predator.C_0 = evader.pos.copy()
         self.evaders.append(evader)
         self.predators.append(predator)
@@ -56,7 +57,7 @@ class EntityManager:
 
     def initialize_single_circle_mode(self, initial=False):
         self.clear_entities()
-        C_0 = config.C_0
+        C_0 = config.C_0.copy()
         D_0 = config.D_0
         if initial:
             evader = Evader(pos=config.C_0 + config.D_0 * pygame.Vector2(math.cos(config.beta), math.sin(config.beta)),
@@ -67,7 +68,9 @@ class EntityManager:
             D_0 = config.random.uniform(10, 30)
             evader = Evader(pos=C_0 + D_0 * get_random_point().normalize(), behavior=move_in_direction)
             predator = Predator(pos=get_random_point(), behavior=pursue_in_circular)
-        predator.C_0 = C_0
+        evader.C_0 = C_0.copy()
+        evader.D_0 = D_0
+        predator.C_0 = C_0.copy()
         predator.D_0 = D_0
         self.evaders.append(evader)
         self.predators.append(predator)

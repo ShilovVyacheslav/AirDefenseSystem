@@ -51,7 +51,7 @@ def calculate_enumeration_spiral_time(predator, evader):
              D_0 / (V_P + V_E[0]) * math.prod([(V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k]) /
                                                (V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k + 1])
                                                for k in range(m - 1)]))
-    return T #t_2pi[m]
+    return T # t_2pi[m]
 
 
 def calculate_circular_touchdown_time(P, C, D_0, V_P, v_1, alpha_1):

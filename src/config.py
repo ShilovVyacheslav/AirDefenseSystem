@@ -23,7 +23,7 @@ m = 3
 A_E = [random.uniform(0, 2*math.pi) for _ in range(k)]
 V_E = [random.uniform(1.0, 5.0) for _ in range(m)]
 v = min(V_E)
-alpha = min(A_E)
+alpha = min([angle % (2*math.pi) for angle in A_E])
 V_P = 18.0
 
 D_0 = 5.0
