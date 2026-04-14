@@ -144,6 +144,6 @@ class EntityManager:
             pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
             if is_circle_mode:
                 pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
-                reference_point = world_to_screen(predator.reference_point, scale, offset)
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+                # reference_point = world_to_screen(predator.reference_point, scale, offset)
+                # pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+                # pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
