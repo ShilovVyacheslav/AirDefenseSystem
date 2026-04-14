@@ -6,7 +6,7 @@ from src.ui.entity import draw, draw_trail
 
 
 class Entity:
-    def __init__(self, pos, speed, radius_world=1, color=(240, 240, 240), behavior=None):
+    def __init__(self, pos, speed, radius_world=1, color=(240, 240, 240), behavior=None, track_id=None):
         self.pos = pygame.Vector2(pos)
         self.speed = speed
         self.vel = pygame.Vector2(0, 0)
@@ -16,7 +16,9 @@ class Entity:
         self.D_0 = 0.0
         self.C_0 = pygame.Vector2(0, 0)
         self.last_positions = []
-        self.track_id = random.randint(1000, 9999)
+        if track_id is None:
+            track_id = random.randint(1, 9999)
+        self.track_id = f"{track_id:04d}"
 
     def move(self, dt):
         if self.behavior:

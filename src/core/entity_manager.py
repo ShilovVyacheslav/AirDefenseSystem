@@ -26,7 +26,7 @@ class EntityManager:
     def initialize_single_spiral_mode(self, initial=False):
         self.clear_entities()
         if initial:
-            evader = Evader(pos=config.E_0, speed=config.v, alpha=config.alpha, behavior=move_in_direction)
+            evader = Evader(pos=config.E_0, speed=config.v, behavior=move_in_direction)
             predator = Predator(pos=config.P_0, behavior=pursue_in_spiral)
         else:
             evader = Evader(pos=get_random_point(), behavior=move_in_direction)
@@ -37,16 +37,17 @@ class EntityManager:
         self.assignments[evader] = predator
         self.mode = "single_spiral"
 
-        return calculate_enumeration_spiral_time(predator.pos.distance_to(evader.pos),
-                                                 predator.speed, predator.V_E)
+        return calculate_enumeration_spiral_time(predator, evader)
 
     def initialize_multiple_spiral_mode(self, count: int = 5):
         self.clear_entities()
-        for _ in range(count):
-            self.evaders.append(Evader(pos=get_random_point(-20, +20, -20, +20), behavior=move_in_direction))
+        for i in range(count):
+            self.evaders.append(Evader(pos=get_random_point(-20, +20, -20, +20),
+                                       behavior=move_in_direction, track_id=i+1))
             self.evaders[-1].C_0 = self.evaders[-1].pos.copy()
-            self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20), behavior=pursue_in_spiral))
-        operation_time = self.apply_bottleneck_assignment(count, calculate_spiral_time)
+            self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20),
+                                           behavior=pursue_in_spiral, track_id=i+1))
+        operation_time = self.apply_bottleneck_assignment(count, calculate_enumeration_spiral_time)
         for evader, predator in self.assignments.items():
             predator.C_0 = evader.C_0.copy()
         self.mode = "multiple_spiral"
@@ -59,7 +60,7 @@ class EntityManager:
         D_0 = config.D_0
         if initial:
             evader = Evader(pos=config.C_0 + config.D_0 * pygame.Vector2(math.cos(config.beta), math.sin(config.beta)),
-                            speed=config.v, behavior=move_in_direction)
+                            speed=config.v, alpha=config.alpha, behavior=move_in_direction)
             predator = Predator(pos=config.P_0, behavior=pursue_in_circular)
         else:
             C_0 = get_random_point()
@@ -77,13 +78,15 @@ class EntityManager:
 
     def initialize_multiple_circle_mode(self, count: int = 5):
         self.clear_entities()
-        for _ in range(count):
+        for i in range(count):
             C_0 = get_random_point(-20, +20, -20, +20)
             D_0 = config.random.uniform(10, 30)
-            self.evaders.append(Evader(pos=C_0 + D_0 * get_random_point().normalize(), behavior=move_in_direction))
+            self.evaders.append(Evader(pos=C_0 + D_0 * get_random_point().normalize(),
+                                       behavior=move_in_direction, track_id=i+1))
             self.evaders[-1].C_0 = C_0
             self.evaders[-1].D_0 = D_0
-            self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20), behavior=pursue_in_circular))
+            self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20),
+                                           behavior=pursue_in_circular, track_id=i+1))
         operation_time = self.apply_bottleneck_assignment(count, calculate_circular_time)
         for evader, predator in self.assignments.items():
             predator.C_0 = evader.C_0.copy()
@@ -121,18 +124,22 @@ class EntityManager:
             predator.move(dt)
 
     def check_collisions(self):
-        for evader, predator in self.assignments.items():
-            if predator.has_captured(evader):
-                pass
+        self.assignments = {
+            evader: predator
+            for evader, predator in self.assignments.items()
+            if not predator.has_captured(evader)
+        }
+        return len(self.assignments)
 
     def draw(self, screen, scale, offset):
+        is_circle_mode = self.mode.endswith("circle")
         for evader, predator in self.assignments.items():
             evader.draw(screen, scale, offset)
             predator.draw(screen, scale, offset)
 
             reference_point = world_to_screen(predator.C_0, scale, offset)
             pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-            if self.mode[-6:] == "circle":
+            if is_circle_mode:
                 pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
                 reference_point = world_to_screen(predator.reference_point, scale, offset)
                 pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)

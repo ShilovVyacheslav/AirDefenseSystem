@@ -27,8 +27,12 @@ def calculate_circular_time(predator, evader):
             calculate_circular_revolution_time(evader.D_0, predator.speed, evader.speed))
 
 
-def calculate_enumeration_spiral_time(D_0, V_P, V_E):
+def calculate_enumeration_spiral_time(predator, evader):
+    D_0 = predator.pos.distance_to(evader.C_0)
+    V_P = predator.speed
+    V_E = predator.V_E
     m = len(V_E)
+    '''
     t_1, t_2pi, d = [0.0] * (m + 1), [0.0] * (m + 1), [0.0] * (m + 1)
     for k in range(1, m + 1):
         v_k = V_E[k - 1]
@@ -38,10 +42,16 @@ def calculate_enumeration_spiral_time(D_0, V_P, V_E):
             d[k] = (V_E[k - 2] - v_k) * t_2pi[k - 1]
         t_1[k] = t_2pi[k - 1] + abs(d[k]) / (V_P + v_k * np.sign(d[k]))
         t_2pi[k] = t_1[k] * math.exp((2 * math.pi * v_k) / math.sqrt(V_P**2 - v_k**2))
-    T = (math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(m)])) * D_0 / (V_P + V_E[0]) *
-         math.prod([1 + abs(V_E[k] - V_E[k + 1]) / (V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k + 1])
-                    for k in range(m - 1)]))
-    return t_2pi[m]
+    '''
+    if V_E == sorted(V_E, reverse=True):
+        T = (math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(m)])) *
+             D_0 / (V_P + V_E[m - 1]))
+    else:
+        T = (math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(m)])) *
+             D_0 / (V_P + V_E[0]) * math.prod([(V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k]) /
+                                               (V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k + 1])
+                                               for k in range(m - 1)]))
+    return T #t_2pi[m]
 
 
 def calculate_circular_touchdown_time(P, C, D_0, V_P, v_1, alpha_1):

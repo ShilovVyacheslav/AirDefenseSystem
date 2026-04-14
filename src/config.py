@@ -17,17 +17,17 @@ P_0 = get_random_point()
 E_0 = get_random_point()
 C_0 = get_random_point()
 
-k = 2
+k = 3
 m = 3
 
 A_E = [random.uniform(0, 2*math.pi) for _ in range(k)]
 V_E = [random.uniform(1.0, 5.0) for _ in range(m)]
 v = min(V_E)
-V_P = 25.0
+alpha = min(A_E)
+V_P = 18.0
 
 D_0 = 5.0
 beta = math.radians(-72)
-alpha = random.choice(A_E)
 
 STYLES = {
     "gadci": {
