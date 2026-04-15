@@ -38,32 +38,37 @@ def pursue_in_spiral(predator, dt):
             return predator.sign * (predator.reference_point - predator.pos).normalize() * V_P
         predator.stage = "spiral"
 
-    t_2pi = t_1 * math.exp(2 * math.pi * v_1 / math.sqrt(V_P**2 - v_1**2))
+    if predator.stage == "spiral":
+        t_2pi = t_1 * math.exp(2 * math.pi * v_1 / math.sqrt(V_P**2 - v_1**2))
 
-    if t < t_2pi:
-        phi_0 = math.radians((predator.starting_point - predator.reference_point).as_polar()[1])
+        if t < t_2pi:
+            phi_0 = math.radians((predator.starting_point - predator.reference_point).as_polar()[1])
 
-        phi = phi_0 + math.sqrt(V_P**2 - v_1**2) / v_1 * math.log(t / t_1)
-        rho = v_1 * t_1 * math.exp((phi - phi_0) * v_1 / math.sqrt(V_P**2 - v_1**2))
+            phi = phi_0 + math.sqrt(V_P**2 - v_1**2) / v_1 * math.log(t / t_1)
+            rho = v_1 * t_1 * math.exp((phi - phi_0) * v_1 / math.sqrt(V_P**2 - v_1**2))
 
-        next_pos = predator.reference_point + pygame.Vector2(rho * math.cos(phi), rho * math.sin(phi))
-        return (next_pos - predator.pos).normalize() * V_P
+            next_pos = predator.reference_point + pygame.Vector2(rho * math.cos(phi), rho * math.sin(phi))
+            return (next_pos - predator.pos).normalize() * V_P
 
-    predator.update_assumed_speed()
-    predator.stage = "direct"
+        predator.update_assumed_speed()
+        predator.stage = "direct"
+        if predator.k == 1:
+            predator.stage = "completed"
 
-    t_2 = t_2pi
-    v_2 = predator.assumed_speed
-    rho_P, rho_E = v_1 * t_2, v_2 * t_2
-    if rho_P > rho_E:
-        t_3 = t_2 + (rho_P - rho_E) / (V_P + v_2)
-    else:
-        t_3 = t_2 + (rho_E - rho_P) / (V_P - v_2)
-    predator.t_0 = t_2
-    predator.t_1 = t_3
-    predator.sign = abs(rho_P - rho_E) / (rho_P - rho_E) if rho_P - rho_E != 0 else +1
+        t_2 = t_2pi
+        v_2 = predator.assumed_speed
+        rho_P, rho_E = v_1 * t_2, v_2 * t_2
+        if rho_P > rho_E:
+            t_3 = t_2 + (rho_P - rho_E) / (V_P + v_2)
+        else:
+            t_3 = t_2 + (rho_E - rho_P) / (V_P - v_2)
+        predator.t_0 = t_2
+        predator.t_1 = t_3
+        predator.sign = abs(rho_P - rho_E) / (rho_P - rho_E) if rho_P - rho_E != 0 else +1
 
-    return predator.sign * (predator.reference_point - predator.pos).normalize() * V_P
+        return predator.sign * (predator.reference_point - predator.pos).normalize() * V_P
+
+    return pygame.Vector2(0, 0)
 
 
 def pursue_in_circular(predator, dt):
@@ -103,33 +108,37 @@ def pursue_in_circular(predator, dt):
         predator.y_checkpoints = predator.reference_point.y - x * math.sin(alpha_1) - y * math.cos(alpha_1)
         predator.stage = "circular"
 
-    t_2pi = t_1 + calculate_circular_revolution_time(D_0, V_P, v_1)
+    if predator.stage == "circular":
+        t_2pi = t_1 + calculate_circular_revolution_time(D_0, V_P, v_1)
 
-    if t < t_2pi:
-        x = np.interp(t - t_0, predator.t_checkpoints, predator.x_checkpoints)
-        y = np.interp(t - t_0, predator.t_checkpoints, predator.y_checkpoints)
-        next_pos = pygame.Vector2(x, y)
-        return (next_pos - predator.pos).normalize() * V_P
+        if t < t_2pi:
+            x = np.interp(t - t_0, predator.t_checkpoints, predator.x_checkpoints)
+            y = np.interp(t - t_0, predator.t_checkpoints, predator.y_checkpoints)
+            next_pos = pygame.Vector2(x, y)
+            return (next_pos - predator.pos).normalize() * V_P
 
-    predator.update_assumed_speed()
-    predator.stage = "direct"
+        predator.update_assumed_speed()
+        predator.stage = "direct"
+        if predator.l == 1 and predator.k == 1:
+            predator.stage = "completed"
 
-    alpha_2 = predator.assumed_angle
-    v_2 = predator.assumed_speed
-    predator.reference_point = predator.C_0 + v_2 * t_2pi * pygame.Vector2(math.cos(alpha_2), math.sin(alpha_2))
-    predator.starting_point = predator.pos.copy()
+        alpha_2 = predator.assumed_angle
+        v_2 = predator.assumed_speed
+        predator.reference_point = predator.C_0 + v_2 * t_2pi * pygame.Vector2(math.cos(alpha_2), math.sin(alpha_2))
+        predator.starting_point = predator.pos.copy()
 
-    predator.t_0 = t_2pi
-    predator.t_1 = t_2pi + calculate_circular_touchdown_time(predator.pos, predator.reference_point,
-                                                             D_0, V_P, v_2, alpha_2)
+        predator.t_0 = t_2pi
+        predator.t_1 = t_2pi + calculate_circular_touchdown_time(predator.pos, predator.reference_point,
+                                                                 D_0, V_P, v_2, alpha_2)
 
-    gamma = math.atan2(predator.starting_point.y - (predator.reference_point.y +
-                                                    v_2 * (predator.t_1 - predator.t_0) * math.sin(alpha_2)),
-                       predator.starting_point.x - (predator.reference_point.x +
-                                                    v_2 * (predator.t_1 - predator.t_0) * math.cos(alpha_2)))
-    touchdown_point = (predator.reference_point +
-                       v_2 * (predator.t_1 - predator.t_0) * pygame.Vector2(math.cos(alpha_2), math.sin(alpha_2)) +
-                       D_0 * pygame.Vector2(math.cos(gamma), math.sin(gamma)))
+        gamma = math.atan2(predator.starting_point.y - (predator.reference_point.y +
+                                                        v_2 * (predator.t_1 - predator.t_0) * math.sin(alpha_2)),
+                           predator.starting_point.x - (predator.reference_point.x +
+                                                        v_2 * (predator.t_1 - predator.t_0) * math.cos(alpha_2)))
+        touchdown_point = (predator.reference_point +
+                           v_2 * (predator.t_1 - predator.t_0) * pygame.Vector2(math.cos(alpha_2), math.sin(alpha_2)) +
+                           D_0 * pygame.Vector2(math.cos(gamma), math.sin(gamma)))
 
-    return (touchdown_point - predator.pos).normalize() * V_P
+        return (touchdown_point - predator.pos).normalize() * V_P
 
+    return pygame.Vector2(0, 0)

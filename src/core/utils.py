@@ -42,16 +42,66 @@ def calculate_enumeration_spiral_time(predator, evader):
             d[k] = (V_E[k - 2] - v_k) * t_2pi[k - 1]
         t_1[k] = t_2pi[k - 1] + abs(d[k]) / (V_P + v_k * np.sign(d[k]))
         t_2pi[k] = t_1[k] * math.exp((2 * math.pi * v_k) / math.sqrt(V_P**2 - v_k**2))
-    '''
+    
     if V_E == sorted(V_E, reverse=True):
-        T = (math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(m)])) *
-             D_0 / (V_P + V_E[m - 1]))
+        T = (predator.exp_2pi_sum * D_0 / (V_P + V_E[m - 1]))
     else:
-        T = (math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(m)])) *
-             D_0 / (V_P + V_E[0]) * math.prod([(V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k]) /
-                                               (V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k + 1])
-                                               for k in range(m - 1)]))
+        T = (predator.exp_2pi_sum * D_0 / (V_P + V_E[0]) * math.prod([(V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k]) /
+                                                                      (V_P + np.sign(V_E[k] - V_E[k + 1]) * V_E[k + 1])
+                                                                      for k in range(m - 1)]))
     return T # t_2pi[m]
+    '''
+    return predator.exp_2pi_sum * D_0 / (V_P + V_E[m - 1])
+
+
+def calculate_enumeration_circular_time(predator, evader):
+    D_0 = evader.D_0
+    V_P = predator.speed
+    V_E = predator.V_E
+    A_E = predator.A_E
+    m = len(V_E)
+    k = len(A_E)
+
+    x_C, y_C = [0.0] * (m * k), [0.0] * (m * k)
+    x_P, y_P = [0.0] * (m * k), [0.0] * (m * k)
+    t_1, t_2pi = [0.0] * (m * k + 1), [0.0] * (m * k + 1)
+    gamma = [0.0] * (m * k + 1)
+
+    x_C_0, y_C_0 = evader.C_0.x, evader.C_0.y
+
+    x_C[0], y_C[0] = x_C_0, y_C_0
+    x_P[0], y_P[0] = predator.pos.x, predator.pos.y
+    t_2pi[0] = 0.0
+
+    for s in range(1, m * k + 1):
+        i = math.ceil(s / m)
+        j = s - (i - 1) * m
+        alpha_i = A_E[i - 1]
+        v_j = V_E[j - 1]
+
+        x_C[s - 1] = x_C_0 + v_j * t_2pi[s - 1] * math.cos(alpha_i)
+        y_C[s - 1] = y_C_0 + v_j * t_2pi[s - 1] * math.sin(alpha_i)
+
+        if s > 1:
+            i_prev = math.ceil((s - 1) / m)
+            j_prev = (s - 1) - (i_prev - 1) * m
+
+            x_P[s - 1] = x_C[s - 2] + D_0 * math.cos(gamma[s - 1]) + V_E[j_prev - 1] * (t_2pi[s - 1] - t_2pi[s - 2]) * math.cos(A_E[i_prev - 1])
+            y_P[s - 1] = y_C[s - 2] + D_0 * math.sin(gamma[s - 1]) + V_E[j_prev - 1] * (t_2pi[s - 1] - t_2pi[s - 2]) * math.sin(A_E[i_prev - 1])
+
+        N = D_0**2 - (x_C[s - 1] - x_P[s - 1])**2 - (y_C[s - 1] - y_P[s - 1])**2
+        if D_0 <= math.sqrt((x_C[s - 1] - x_P[s - 1])**2 + (y_C[s - 1] - y_P[s - 1])**2):
+            M_1 = (x_C[s - 1] - x_P[s - 1]) * v_j * math.cos(alpha_i) + (y_C[s - 1] - y_P[s - 1]) * v_j * math.sin(alpha_i) - V_P * D_0
+            t_1[s] = (M_1 + math.sqrt(M_1**2 - (V_P**2 - v_j**2) * N)) / (V_P**2 - v_j**2)
+        else:
+            M_2 = (x_C[s - 1] - x_P[s - 1]) * v_j * math.cos(alpha_i) + (y_C[s - 1] - y_P[s - 1]) * v_j * math.sin(alpha_i) + V_P * D_0
+            t_1[s] = (M_2 - math.sqrt(M_2**2 - (V_P**2 - v_j**2) * N)) / (V_P**2 - v_j**2)
+
+        gamma[s] = math.atan2(y_P[s - 1] - y_C[s - 1] - v_j * t_1[s] * math.sin(alpha_i), x_P[s - 1] - x_C[s - 1] - v_j * t_1[s] * math.cos(alpha_i))
+
+        t_2pi[s] = t_2pi[s - 1] + t_1[s] + 4 * D_0 * V_P * ellipeinc(math.pi / 2, v_j**2 / V_P**2) / (V_P**2 - v_j**2)
+
+    return t_2pi[m * k]
 
 
 def calculate_circular_touchdown_time(P, C, D_0, V_P, v_1, alpha_1):

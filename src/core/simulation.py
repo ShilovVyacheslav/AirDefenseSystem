@@ -19,11 +19,12 @@ class Simulation:
         self.timer = 0
         self.interception_time = 0
         self.respawn = False
+        self.provide_matrix = False
         self.matrix_overlay = MatrixOverlay()
         self.modes = {
             "single_spiral": lambda: self.entity_manager.initialize_single_spiral_mode(initial=False),
             "multiple_spiral": lambda: self.entity_manager.initialize_multiple_spiral_mode(count=500),
-            "single_circle": lambda: self.entity_manager.initialize_single_circle_mode(initial=True),
+            "single_circle": lambda: self.entity_manager.initialize_single_circle_mode(initial=False),
             "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=500),
         }
         self.mode_keys = {
@@ -49,7 +50,7 @@ class Simulation:
     def reset_entities(self, mode: str = "single_spiral"):
         self.interception_time = self.modes.get(mode, self.modes["single_spiral"])()
         self.timer = 0
-        if mode.startswith("multiple"):
+        if self.provide_matrix and mode.startswith("multiple"):
             self.matrix_overlay.reset(self.entity_manager)
 
     def show_loading_screen(self):
@@ -86,7 +87,7 @@ class Simulation:
         self.timer += dt
         self.entity_manager.update(dt)
         self.entity_manager.check_collisions()
-        if self.entity_manager.check_collisions() == 0 and self.respawn:
+        if self.respawn and self.entity_manager.check_collisions() == 0:
             self.reset_entities(self.entity_manager.mode)
 
     def render(self, dt: float):

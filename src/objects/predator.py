@@ -24,6 +24,8 @@ class Predator(Entity):
         self.A_E = sorted([angle % (2*math.pi) for angle in config.A_E], reverse=True)
         self.l = 0
         self.assumed_angle = 0.0
+        self.exp_2pi_sum = math.exp(2*math.pi * sum([self.V_E[k] / math.sqrt(self.speed**2 - self.V_E[k]**2)
+                                                     for k in range(len(self.V_E))]))
 
     def draw(self, screen, scale, offset):
         draw_predator(self, screen, scale, offset)
