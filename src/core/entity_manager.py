@@ -89,7 +89,7 @@ class EntityManager:
             self.evaders[-1].D_0 = D_0
             self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20),
                                            behavior=pursue_in_circular, track_id=i+1))
-        operation_time = self.apply_bottleneck_assignment(count, calculate_circular_time)
+        operation_time = self.apply_bottleneck_assignment(count, calculate_enumeration_circular_time)
         for evader, predator in self.assignments.items():
             predator.C_0 = evader.C_0.copy()
             predator.D_0 = evader.D_0

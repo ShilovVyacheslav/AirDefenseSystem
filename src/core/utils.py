@@ -99,7 +99,7 @@ def calculate_enumeration_circular_time(predator, evader):
 
         gamma[s] = math.atan2(y_P[s - 1] - y_C[s - 1] - v_j * t_1[s] * math.sin(alpha_i), x_P[s - 1] - x_C[s - 1] - v_j * t_1[s] * math.cos(alpha_i))
 
-        t_2pi[s] = t_2pi[s - 1] + t_1[s] + 4 * D_0 * V_P * ellipeinc(math.pi / 2, v_j**2 / V_P**2) / (V_P**2 - v_j**2)
+        t_2pi[s] = t_2pi[s - 1] + t_1[s] + 4 * D_0 * V_P * predator.ellip[v_j] / (V_P**2 - v_j**2)
 
     return t_2pi[m * k]
 

@@ -1,6 +1,7 @@
 import math
 
 import pygame
+from scipy.special import ellipeinc
 
 from src.core.coordinate_system import *
 from src.objects.entity import Entity
@@ -26,6 +27,7 @@ class Predator(Entity):
         self.assumed_angle = 0.0
         self.exp_2pi_sum = math.exp(2*math.pi * sum([self.V_E[k] / math.sqrt(self.speed**2 - self.V_E[k]**2)
                                                      for k in range(len(self.V_E))]))
+        self.ellip = {v_j: ellipeinc(math.pi / 2, v_j**2 / self.speed**2) for v_j in self.V_E}
 
     def draw(self, screen, scale, offset):
         draw_predator(self, screen, scale, offset)
