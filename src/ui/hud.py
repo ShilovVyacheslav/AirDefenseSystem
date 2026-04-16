@@ -55,7 +55,7 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
     hud_height = 5 + len(info_bottom) * line_height + 15
     y = H - hud_height
     bg_bottom = config.pygame.Surface((W, hud_height), config.pygame.SRCALPHA)
-    bg_bottom.fill((0, 30, 0, 180))
+    bg_bottom.fill(config.COLOR_HUD_BG)
     screen.blit(bg_bottom, (0, y))
     for i, line in enumerate(info_bottom):
         txt = config.font_small.render(line, True, config.COLOR_TEXT)

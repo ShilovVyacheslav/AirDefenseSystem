@@ -1,6 +1,9 @@
+import math
+
 import numpy as np
 from typing import List, Tuple, Optional
 from collections import deque
+from tqdm import tqdm
 
 
 class HopcroftKarp:
@@ -83,6 +86,8 @@ def perfect_matching(threshold: float, cost_matrix: np.ndarray) -> Optional[List
 def bottleneck_algorithm(cost_matrix: np.ndarray) -> List[Tuple[int, int]]:
     n = cost_matrix.shape[0]
     unique_costs = uniq(cost_matrix)
+    total_ops = math.ceil(math.log2(len(unique_costs))) if len(unique_costs) > 1 else 1
+    pbar = tqdm(total=total_ops, desc="Bottleneck", unit="step")
     left, right = 0, len(unique_costs) - 1
     best_threshold = unique_costs[-1]
     best_assignment = None
@@ -90,12 +95,14 @@ def bottleneck_algorithm(cost_matrix: np.ndarray) -> List[Tuple[int, int]]:
         mid = (left + right) // 2
         threshold = unique_costs[mid]
         match = perfect_matching(threshold, cost_matrix)
+        pbar.update(1)
         if match is not None:
             best_threshold = threshold
             best_assignment = match
             right = mid - 1
         else:
             left = mid + 1
+    pbar.close()
     if best_assignment is None:
         return []
     return [(i, best_assignment[i]) for i in range(n) if best_assignment[i] != -1]

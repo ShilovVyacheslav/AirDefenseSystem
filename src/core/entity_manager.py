@@ -12,6 +12,7 @@ from src.objects.behaviors import move_in_direction, pursue_in_spiral, pursue_in
 from src.objects.predator import Predator
 from src.objects.evader import Evader
 from typing import List, Dict
+from tqdm import tqdm
 
 
 class EntityManager:
@@ -100,10 +101,14 @@ class EntityManager:
     def apply_bottleneck_assignment(self, count: int, calculate_interception_time):
         self.assignments.clear()
         cost_matrix = np.zeros((count, count), dtype=np.float64)
+        total_ops = count * count
+        pbar = tqdm(total=total_ops, desc="Building cost matrix", unit="pair")
         for i, predator in enumerate(self.predators):
             for j, evader in enumerate(self.evaders):
                 interception_time = calculate_interception_time(predator, evader)
                 cost_matrix[i, j] = interception_time if interception_time != float('inf') else np.inf
+                pbar.update(1)
+        pbar.close()
         assignment = bottleneck_algorithm(cost_matrix)
         max_time = 0.0
         for predator_idx, evader_idx in assignment:
@@ -141,8 +146,8 @@ class EntityManager:
 
             reference_point = world_to_screen(predator.C_0, scale, offset)
             pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-            if is_circle_mode:
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
-                reference_point = world_to_screen(predator.reference_point, scale, offset)
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+            #if is_circle_mode:
+                #pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+                #reference_point = world_to_screen(predator.reference_point, scale, offset)
+                #pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+                #pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)

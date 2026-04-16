@@ -17,14 +17,14 @@ P_0 = get_random_point()
 E_0 = get_random_point()
 C_0 = get_random_point()
 
-k = 3
-m = 3
+k = 5
+m = 5
 
 A_E = [random.uniform(0, 2*math.pi) for _ in range(k)]
 V_E = [random.uniform(1.0, 5.0) for _ in range(m)]
 v = min(V_E)
 alpha = min([angle % (2*math.pi) for angle in A_E])
-V_P = 18.0
+V_P = 16.0
 
 D_0 = 5.0
 beta = math.radians(-72)
@@ -41,10 +41,44 @@ STYLES = {
             "HIGHLIGHT": (0, 200, 255),
             "ALERT": (0, 150, 100),
             "FRIENDLY": (0, 200, 255),
-            "TARGET": (0, 255, 150),
+            "TARGET": (0, 255, 150), # (255, 60, 60),
             "PREDATOR": (0, 150, 100),
             "HUD_BG": (0, 30, 0, 180),
             "STATS_BG": (0, 0, 0, 150),
+        }
+    },
+    "cod_mw_3": {
+        "NAME": "G.A.D.C.I. PROTOCOL",
+        "COLORS": {
+            "BG": (15, 20, 15),
+            "GRID_MAJOR": (45, 55, 45),
+            "GRID_MINOR": (30, 35, 30),
+            "AXIS": (80, 90, 80),
+            "TEXT": (180, 230, 150),
+            "HIGHLIGHT": (200, 220, 255),
+            "HUD_BG": (10, 20, 10, 200),
+            "STATS_BG": (5, 10, 5, 180),
+            "FRIENDLY": (120, 200, 255),
+            "PREDATOR": (150, 220, 180),
+            "TARGET": (255, 70, 30),
+            "ALERT": (255, 180, 40),
+        }
+    },
+    "spectre": {
+        "NAME": "G.A.D.C.I. PROTOCOL",
+        "COLORS": {
+            "BG": (8, 12, 16),
+            "GRID_MAJOR": (30, 40, 50),
+            "GRID_MINOR": (20, 28, 35),
+            "AXIS": (60, 80, 100),
+            "TEXT": (200, 210, 220),
+            "HIGHLIGHT": (255, 255, 255),
+            "FRIENDLY": (0, 180, 255),
+            "PREDATOR": (100, 200, 200),
+            "TARGET": (255, 40, 0),
+            "ALERT": (255, 140, 0),
+            "HUD_BG": (12, 18, 24, 220),
+            "STATS_BG": (5, 8, 12, 200),
         }
     },
 }
