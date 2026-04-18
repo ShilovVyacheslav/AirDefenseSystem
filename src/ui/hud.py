@@ -39,7 +39,7 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
         f"TIME: {timer:.3f}s / {interception_time:.3f}s | DT: {dt * 1000:.1f}ms | FPS: {clock.get_fps():.1f}",
         "CONTROLS: [RMB] PAN | [SCROLL] ZOOM | [SPACE] RESET VIEW",
         "MATRIX: [M] TOGGLE OVERLAY",
-        f"MODE: [1] SINGLE-SPIRAL | [2] MULTIPLE-SPIRAL | [3] SINGLE-CIRCLE | [4] MULTIPLE-CIRCLE",
+        f"MODE: [1] [2] SPIRAL | [3] [4] CIRCULAR | [5] [6] TARGETING",
     ]
     y = 10
     for line in info_left:

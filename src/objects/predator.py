@@ -1,7 +1,4 @@
-import math
-
 import pygame
-from scipy.special import ellipeinc
 
 from src.core.coordinate_system import *
 from src.objects.entity import Entity
@@ -13,7 +10,6 @@ class Predator(Entity):
         super().__init__(pos, speed, radius_world=config.PREDATOR_RADIUS_WORLD,
                          color=config.COLOR_FRIENDLY, behavior=behavior, track_id=track_id)
         self.stage = "free"
-        self.V_E = sorted(config.V_E, reverse=True)
         self.interception_time = 0.0
         self.k = 0
         self.assumed_speed = 0.0
@@ -22,12 +18,8 @@ class Predator(Entity):
         self.t_0 = 0.0
         self.t_1 = 0.0
         self.sign = +1
-        self.A_E = sorted([angle % (2*math.pi) for angle in config.A_E], reverse=True)
         self.l = 0
         self.assumed_angle = 0.0
-        self.exp_2pi_sum = math.exp(2*math.pi * sum([self.V_E[k] / math.sqrt(self.speed**2 - self.V_E[k]**2)
-                                                     for k in range(len(self.V_E))]))
-        self.ellip = {v_j: ellipeinc(math.pi / 2, v_j**2 / self.speed**2) for v_j in self.V_E}
 
     def draw(self, screen, scale, offset):
         draw_predator(self, screen, scale, offset)

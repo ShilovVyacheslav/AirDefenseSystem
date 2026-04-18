@@ -32,7 +32,9 @@ class EntityManager:
             evader = Evader(pos=get_random_point(), behavior=move_in_direction)
             predator = Predator(pos=get_random_point(), behavior=pursue_in_spiral)
         evader.C_0 = evader.pos.copy()
-        predator.C_0 = evader.pos.copy()
+        evader.V_E = config.V_E.copy()
+        predator.C_0 = evader.C_0.copy()
+        predator.V_E = sorted(evader.V_E.copy(), reverse=True)
         self.evaders.append(evader)
         self.predators.append(predator)
         self.assignments[evader] = predator
@@ -40,18 +42,30 @@ class EntityManager:
 
         return calculate_enumeration_spiral_time(predator, evader)
 
-    def initialize_multiple_spiral_mode(self, count: int = 5):
+    def initialize_multiple_spiral_mode(self, count: int = config.n, initial=False):
         self.clear_entities()
+        if initial:
+            P_0s = config.P_0s.copy()
+            C_0s = config.C_0s.copy()
+            V_Es = [config.V_Es[i] for i in range(count)]
+            V_Ps = config.V_Ps.copy()
+        else:
+            P_0s = [get_random_point(-20, +20, -20, +20) for _ in range(count)]
+            C_0s = [get_random_point(-20, +20, -20, +20) for _ in range(count)]
+            V_Es = [config.V_E for i in range(count)]
+            V_Ps = [config.V_P for i in range(count)]
         for i in range(count):
-            self.evaders.append(Evader(pos=get_random_point(-20, +20, -20, +20),
-                                       behavior=move_in_direction, track_id=i+1))
+            self.evaders.append(Evader(pos=C_0s[i], speed=min(V_Es[i]), behavior=move_in_direction, track_id=i+1))
             self.evaders[-1].C_0 = self.evaders[-1].pos.copy()
-            self.predators.append(Predator(pos=get_random_point(-20, +20, -20, +20),
-                                           behavior=pursue_in_spiral, track_id=i+1))
+            self.evaders[-1].V_E = V_Es[i].copy()
+            self.predators.append(Predator(pos=P_0s[i], speed=V_Ps[i], behavior=pursue_in_spiral, track_id=i+1))
         operation_time = self.apply_bottleneck_assignment(count, calculate_enumeration_spiral_time)
         for evader, predator in self.assignments.items():
             predator.C_0 = evader.C_0.copy()
+            predator.V_E = sorted(evader.V_E.copy(), reverse=True)
         self.mode = "multiple_spiral"
+
+        print(self.cost_matrix)
 
         return operation_time
 

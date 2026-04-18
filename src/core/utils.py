@@ -30,7 +30,7 @@ def calculate_circular_time(predator, evader):
 def calculate_enumeration_spiral_time(predator, evader):
     D_0 = predator.pos.distance_to(evader.C_0)
     V_P = predator.speed
-    V_E = predator.V_E
+    V_E = sorted(evader.V_E, reverse=True)
     m = len(V_E)
     '''
     t_1, t_2pi, d = [0.0] * (m + 1), [0.0] * (m + 1), [0.0] * (m + 1)
@@ -51,7 +51,8 @@ def calculate_enumeration_spiral_time(predator, evader):
                                                                       for k in range(m - 1)]))
     return T # t_2pi[m]
     '''
-    return predator.exp_2pi_sum * D_0 / (V_P + V_E[m - 1])
+    exp_2pi_sum = math.exp(2*math.pi * sum([V_E[k] / math.sqrt(V_P**2 - V_E[k]**2) for k in range(len(V_E))]))
+    return exp_2pi_sum * D_0 / (V_P + V_E[m - 1])
 
 
 def calculate_enumeration_circular_time(predator, evader):

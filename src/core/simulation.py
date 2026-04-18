@@ -19,13 +19,13 @@ class Simulation:
         self.timer = 0
         self.interception_time = 0
         self.respawn = False
-        self.provide_matrix = False
+        self.provide_matrix = True
         self.matrix_overlay = MatrixOverlay()
         self.modes = {
             "single_spiral": lambda: self.entity_manager.initialize_single_spiral_mode(initial=False),
-            "multiple_spiral": lambda: self.entity_manager.initialize_multiple_spiral_mode(count=300),
+            "multiple_spiral": lambda: self.entity_manager.initialize_multiple_spiral_mode(initial=True),
             "single_circle": lambda: self.entity_manager.initialize_single_circle_mode(initial=False),
-            "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=300),
+            "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=222),
         }
         self.mode_keys = {
             pygame.K_1: "single_spiral",

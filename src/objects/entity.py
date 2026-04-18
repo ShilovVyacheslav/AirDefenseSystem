@@ -1,7 +1,9 @@
+import math
 import random
 
 import pygame
 
+from src import config
 from src.ui.entity import draw, draw_trail
 
 
@@ -9,6 +11,8 @@ class Entity:
     def __init__(self, pos, speed, radius_world=1, color=(240, 240, 240), behavior=None, track_id=None):
         self.pos = pygame.Vector2(pos)
         self.speed = speed
+        self.V_E = sorted(config.V_E, reverse=True)
+        self.A_E = sorted([angle % (2*math.pi) for angle in config.A_E], reverse=True)
         self.vel = pygame.Vector2(0, 0)
         self.radius_world = radius_world
         self.color = color
