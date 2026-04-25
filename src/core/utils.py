@@ -27,6 +27,13 @@ def calculate_circular_time(predator, evader):
             calculate_circular_revolution_time(evader.D_0, predator.speed, evader.speed))
 
 
+def calculate_targeting_time(predator, evader):
+    h = evader.C_0.y
+    V_P = predator.speed
+    v = evader.speed
+    return V_P * h / (V_P**2 - v**2)
+
+
 def calculate_enumeration_spiral_time(predator, evader):
     D_0 = predator.pos.distance_to(evader.C_0)
     V_P = predator.speed
@@ -58,8 +65,8 @@ def calculate_enumeration_spiral_time(predator, evader):
 def calculate_enumeration_circular_time(predator, evader):
     D_0 = evader.D_0
     V_P = predator.speed
-    V_E = predator.V_E
-    A_E = predator.A_E
+    V_E = sorted(evader.V_E, reverse=True)
+    A_E = sorted(evader.A_E, reverse=True)
     m = len(V_E)
     k = len(A_E)
 
@@ -100,7 +107,7 @@ def calculate_enumeration_circular_time(predator, evader):
 
         gamma[s] = math.atan2(y_P[s - 1] - y_C[s - 1] - v_j * t_1[s] * math.sin(alpha_i), x_P[s - 1] - x_C[s - 1] - v_j * t_1[s] * math.cos(alpha_i))
 
-        t_2pi[s] = t_2pi[s - 1] + t_1[s] + 4 * D_0 * V_P * predator.ellip[v_j] / (V_P**2 - v_j**2)
+        t_2pi[s] = t_2pi[s - 1] + t_1[s] + 4 * D_0 * V_P * ellipeinc(math.pi / 2, (v_j / V_P)**2) / (V_P**2 - v_j**2)
 
     return t_2pi[m * k]
 
