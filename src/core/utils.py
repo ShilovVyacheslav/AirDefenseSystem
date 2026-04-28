@@ -1,9 +1,16 @@
 import math
+import os
+
 import pygame
 import random
 import numpy as np
+from numba import njit
 
 from scipy.special import ellipeinc
+from src.core.constants import STEP
+
+LUT_PATH = os.path.join(os.path.dirname(__file__), 'ellipe_lut.npy')
+ellipe_lut = np.load(LUT_PATH)
 
 
 def get_random_point(a=-10, b=10, c=-10, d=10):
@@ -62,54 +69,77 @@ def calculate_enumeration_spiral_time(predator, evader):
     return exp_2pi_sum * D_0 / (V_P + V_E[m - 1])
 
 
-def calculate_enumeration_circular_time(predator, evader):
-    D_0 = evader.D_0
-    V_P = predator.speed
-    V_E = sorted(evader.V_E, reverse=True)
-    A_E = sorted(evader.A_E, reverse=True)
+def fast_ellipeinc(val):
+    idx = val / STEP
+    i = int(idx)
+    if i >= len(ellipe_lut) - 1:
+        return ellipe_lut[-1]
+    frac = idx - i
+    return ellipe_lut[i] + frac * (ellipe_lut[i + 1] - ellipe_lut[i])
+
+
+@njit(cache=True)
+def _calc_circular_core(D_0, V_P, V_E, A_E, x_C_0, y_C_0, x_P_0, y_P_0):
     m = len(V_E)
     k = len(A_E)
+    total = m * k
 
-    x_C, y_C = [0.0] * (m * k), [0.0] * (m * k)
-    x_P, y_P = [0.0] * (m * k), [0.0] * (m * k)
-    t_1, t_2pi = [0.0] * (m * k + 1), [0.0] * (m * k + 1)
-    gamma = [0.0] * (m * k + 1)
+    x_C_prev, y_C_prev = x_C_0, y_C_0
+    x_P_prev, y_P_prev = x_P_0, y_P_0
+    t_2pi, t_2pi_prev, t_2pi_prev_prev = 0.0, 0.0, 0.0
+    gamma = 0.0
 
-    x_C_0, y_C_0 = evader.C_0.x, evader.C_0.y
-
-    x_C[0], y_C[0] = x_C_0, y_C_0
-    x_P[0], y_P[0] = predator.pos.x, predator.pos.y
-    t_2pi[0] = 0.0
-
-    for s in range(1, m * k + 1):
-        i = math.ceil(s / m)
+    for s in range(1, total + 1):
+        i = (s + m - 1) // m
         j = s - (i - 1) * m
         alpha_i = A_E[i - 1]
         v_j = V_E[j - 1]
 
-        x_C[s - 1] = x_C_0 + v_j * t_2pi[s - 1] * math.cos(alpha_i)
-        y_C[s - 1] = y_C_0 + v_j * t_2pi[s - 1] * math.sin(alpha_i)
+        x_C = x_C_0 + v_j * t_2pi_prev * math.cos(alpha_i)
+        y_C = y_C_0 + v_j * t_2pi_prev * math.sin(alpha_i)
 
         if s > 1:
-            i_prev = math.ceil((s - 1) / m)
+            i_prev = (s - 1 + m - 1) // m
             j_prev = (s - 1) - (i_prev - 1) * m
-
-            x_P[s - 1] = x_C[s - 2] + D_0 * math.cos(gamma[s - 1]) + V_E[j_prev - 1] * (t_2pi[s - 1] - t_2pi[s - 2]) * math.cos(A_E[i_prev - 1])
-            y_P[s - 1] = y_C[s - 2] + D_0 * math.sin(gamma[s - 1]) + V_E[j_prev - 1] * (t_2pi[s - 1] - t_2pi[s - 2]) * math.sin(A_E[i_prev - 1])
-
-        N = D_0**2 - (x_C[s - 1] - x_P[s - 1])**2 - (y_C[s - 1] - y_P[s - 1])**2
-        if D_0 <= math.sqrt((x_C[s - 1] - x_P[s - 1])**2 + (y_C[s - 1] - y_P[s - 1])**2):
-            M_1 = (x_C[s - 1] - x_P[s - 1]) * v_j * math.cos(alpha_i) + (y_C[s - 1] - y_P[s - 1]) * v_j * math.sin(alpha_i) - V_P * D_0
-            t_1[s] = (M_1 + math.sqrt(M_1**2 - (V_P**2 - v_j**2) * N)) / (V_P**2 - v_j**2)
+            x_P = x_C_prev + D_0 * math.cos(gamma) + V_E[j_prev - 1] * (t_2pi_prev - t_2pi_prev_prev) * math.cos(A_E[i_prev - 1])
+            y_P = y_C_prev + D_0 * math.sin(gamma) + V_E[j_prev - 1] * (t_2pi_prev - t_2pi_prev_prev) * math.sin(A_E[i_prev - 1])
         else:
-            M_2 = (x_C[s - 1] - x_P[s - 1]) * v_j * math.cos(alpha_i) + (y_C[s - 1] - y_P[s - 1]) * v_j * math.sin(alpha_i) + V_P * D_0
-            t_1[s] = (M_2 - math.sqrt(M_2**2 - (V_P**2 - v_j**2) * N)) / (V_P**2 - v_j**2)
+            x_P = x_P_prev
+            y_P = y_P_prev
 
-        gamma[s] = math.atan2(y_P[s - 1] - y_C[s - 1] - v_j * t_1[s] * math.sin(alpha_i), x_P[s - 1] - x_C[s - 1] - v_j * t_1[s] * math.cos(alpha_i))
+        N = D_0 ** 2 - (x_C - x_P) ** 2 - (y_C - y_P) ** 2
+        if D_0 <= math.sqrt((x_C - x_P) ** 2 + (y_C - y_P) ** 2):
+            M_1 = (x_C - x_P) * v_j * math.cos(alpha_i) + (y_C - y_P) * v_j * math.sin(alpha_i) - V_P * D_0
+            t_1 = (M_1 + math.sqrt(M_1 ** 2 - (V_P ** 2 - v_j ** 2) * N)) / (V_P ** 2 - v_j ** 2)
+        else:
+            M_2 = (x_C - x_P) * v_j * math.cos(alpha_i) + (y_C - y_P) * v_j * math.sin(alpha_i) + V_P * D_0
+            t_1 = (M_2 - math.sqrt(M_2 ** 2 - (V_P ** 2 - v_j ** 2) * N)) / (V_P ** 2 - v_j ** 2)
 
-        t_2pi[s] = t_2pi[s - 1] + t_1[s] + 4 * D_0 * V_P * ellipeinc(math.pi / 2, (v_j / V_P)**2) / (V_P**2 - v_j**2)
+        gamma = math.atan2(y_P - y_C - v_j * t_1 * math.sin(alpha_i), x_P - x_C - v_j * t_1 * math.cos(alpha_i))
 
-    return t_2pi[m * k]
+        val = (v_j / V_P) ** 2
+        idx = int(val / STEP)
+        if idx >= len(ellipe_lut) - 1:
+            fast_ellipe = ellipe_lut[-1]
+        else:
+            frac = val / STEP - idx
+            fast_ellipe = ellipe_lut[idx] + frac * (ellipe_lut[idx + 1] - ellipe_lut[idx])
+
+        t_2pi = t_2pi_prev + t_1 + 4 * D_0 * V_P * fast_ellipe / (V_P ** 2 - v_j ** 2)
+        t_2pi_prev_prev = t_2pi_prev
+        t_2pi_prev = t_2pi
+
+        x_C_prev = x_C
+        y_C_prev = y_C
+        x_P_prev = x_P
+        y_P_prev = y_P
+
+    return t_2pi
+
+
+def calculate_enumeration_circular_time(predator, evader):
+    return _calc_circular_core(evader.D_0, predator.speed, evader.V_E, evader.A_E,
+                               evader.C_0.x, evader.C_0.y, predator.pos.x, predator.pos.y)
 
 
 def calculate_circular_touchdown_time(P, C, D_0, V_P, v_1, alpha_1):

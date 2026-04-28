@@ -88,6 +88,7 @@ class EntityManager:
         evader.D_0 = D_0
         predator.C_0 = C_0.copy()
         predator.D_0 = D_0
+        predator.precompute_trajectory()
         self.evaders.append(evader)
         self.predators.append(predator)
         self.assignments[evader] = predator
@@ -120,16 +121,18 @@ class EntityManager:
                                        alpha=alphas[i], behavior=move_in_direction, track_id=i+1))
             self.evaders[-1].C_0 = pygame.Vector2(C_0s[i])
             self.evaders[-1].D_0 = D_0s[i]
-            self.evaders[-1].V_E = V_Es[i].copy()
-            self.evaders[-1].A_E = A_Es[i].copy()
+            self.evaders[-1].V_E = sorted(V_Es[i].copy(), reverse=True)
+            A_E = A_Es[i].copy()
+            self.evaders[-1].A_E = sorted([angle % (2*math.pi) for angle in A_E], reverse=True)
             self.predators.append(Predator(pos=P_0s[i], speed=V_Ps[i],
                                            behavior=pursue_in_circular, track_id=i+1))
         operation_time = self.apply_bottleneck_assignment(count, calculate_enumeration_circular_time)
-        for evader, predator in self.assignments.items():
+        for evader, predator in tqdm(self.assignments.items()):
             predator.C_0 = evader.C_0.copy()
             predator.D_0 = evader.D_0
             predator.V_E = sorted(evader.V_E.copy(), reverse=True)
             predator.A_E = sorted(evader.A_E.copy(), reverse=True)
+            predator.precompute_trajectory()
         self.mode = "multiple_circle"
 
         return operation_time

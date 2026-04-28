@@ -23,11 +23,11 @@ class Simulation:
         self.matrix_overlay = MatrixOverlay()
         self.modes = {
             "single_spiral": lambda: self.entity_manager.initialize_single_spiral_mode(initial=False),
-            "multiple_spiral": lambda: self.entity_manager.initialize_multiple_spiral_mode(count=222),
+            "multiple_spiral": lambda: self.entity_manager.initialize_multiple_spiral_mode(count=200),
             "single_circle": lambda: self.entity_manager.initialize_single_circle_mode(initial=False),
-            "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=222),
+            "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=200),
             "single_targeting": lambda: self.entity_manager.initialize_single_targeting_mode(initial=False),
-            "multiple_targeting": lambda: self.entity_manager.initialize_multiple_targeting_mode(count=222),
+            "multiple_targeting": lambda: self.entity_manager.initialize_multiple_targeting_mode(count=200),
         }
         self.mode_keys = {
             pygame.K_1: "single_spiral",
