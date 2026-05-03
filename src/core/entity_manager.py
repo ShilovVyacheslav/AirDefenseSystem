@@ -52,14 +52,16 @@ class EntityManager:
             V_Es = [config.V_Es[i] for i in range(count)]
             vs = [min(V_Es[i]) for i in range(count)]
             V_Ps = config.V_Ps.copy()
+            alphas = config.alphas.copy()
         else:
             P_0s = [get_random_point(-20, +20, -20, +20) for _ in range(count)]
             C_0s = [get_random_point(-20, +20, -20, +20) for _ in range(count)]
             V_Es = [config.V_E for i in range(count)]
             vs = [random.choice(V_Es[i]) for i in range(count)]
             V_Ps = [config.V_P for i in range(count)]
+            alphas = [random.choice(config.A_E[i]) for i in range(count)]
         for i in range(count):
-            self.evaders.append(Evader(pos=C_0s[i], speed=vs[i], behavior=move_in_direction, track_id=i+1))
+            self.evaders.append(Evader(pos=C_0s[i], speed=vs[i], alpha=alphas[i], behavior=move_in_direction, track_id=i+1))
             self.evaders[-1].C_0 = self.evaders[-1].pos.copy()
             self.evaders[-1].V_E = V_Es[i].copy()
             self.predators.append(Predator(pos=P_0s[i], speed=V_Ps[i], behavior=pursue_in_spiral, track_id=i+1))
@@ -228,8 +230,8 @@ class EntityManager:
 
             reference_point = world_to_screen(predator.C_0, scale, offset)
             pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-            # if is_circle_mode:
-            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
-            #    reference_point = world_to_screen(predator.reference_point, scale, offset)
-            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+            if is_circle_mode:
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+                reference_point = world_to_screen(predator.reference_point, scale, offset)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)

@@ -21,7 +21,7 @@ def draw_trail(entity, screen, scale, offset):
     if len(entity.last_positions) > 1:
         dash_length = max(2, 10 / scale)
         gap_length = dash_length
-        for i in range(len(entity.last_positions) - 1):
+        for i in range(0, len(entity.last_positions) - 1, 5):
             pos1 = world_to_screen(entity.last_positions[i], scale, offset)
             pos2 = world_to_screen(entity.last_positions[i + 1], scale, offset)
             total_length = (pos2 - pos1).length()
@@ -37,7 +37,8 @@ def draw_trail(entity, screen, scale, offset):
 
 def draw_predator(predator, screen, scale, offset):
     draw(predator, screen, scale, offset)
-    #predator.draw_trail(screen, scale, offset)
+    if predator.track_id.endswith("0004"):
+        predator.draw_trail(screen, scale, offset)
     p_screen = world_to_screen(predator.pos, scale, offset)
     r_px = max(3, int(predator.radius_world * scale))
     config.pygame.draw.circle(screen, predator.color, (int(p_screen.x), int(p_screen.y)), r_px, 1)

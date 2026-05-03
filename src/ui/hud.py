@@ -11,9 +11,10 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
     mode = entity_manager.mode
     info_left = [
         f"> SYSTEM STATUS: NOMINAL",
-        f"> OPERATIONAL READINESS: 100%",
-        f"> NETWORK: SECURE",
+        #f"> OPERATIONAL READINESS: 100%",
+        #f"> NETWORK: SECURE",
         f"> MODE: {mode.upper().replace('_', '-')}",
+        f"> TIME: {timer:.3f}s / {interception_time:.3f}s"
     ]
     evader = entity_manager.evaders[0] if entity_manager.evaders else None
     predator = entity_manager.predators[0] if entity_manager.predators else None
@@ -36,7 +37,7 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
     info_bottom = [
         f"SCALE: {scale:.1f} px/unit",
         f"WORLD CURSOR: ({w.x:.2f}, {w.y:.2f})",
-        f"TIME: {timer:.3f}s / {interception_time:.3f}s | DT: {dt * 1000:.1f}ms | FPS: {clock.get_fps():.1f}",
+        f"DT: {dt * 1000:.1f}ms | FPS: {clock.get_fps():.1f}",
         "CONTROLS: [RMB] PAN | [SCROLL] ZOOM | [SPACE] RESET VIEW",
         "MATRIX: [M] TOGGLE OVERLAY",
         f"MODE: [1] [2] SPIRAL | [3] [4] CIRCULAR | [5] [6] TARGETING",

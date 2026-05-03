@@ -6,8 +6,10 @@ from src.config import font_small, COLOR_TEXT, COLOR_HIGHLIGHT, COLOR_GRID_MINOR
 class MatrixOverlay:
     def __init__(self):
         self.visible = False
-        self.width = 582
-        self.height = 312
+        self.max_width = 602
+        self.max_height = 312
+        self.width = self.max_width
+        self.height = self.max_height
         self.position = (25, 125)
         self.overlay_surface = None
 
@@ -16,7 +18,7 @@ class MatrixOverlay:
         self.max_scroll_x = 0
         self.max_scroll_y = 0
 
-        self.cell_width = 70
+        self.cell_width = 85
         self.cell_height = 25
         self.id_width = 80
         self.header_height = 25
@@ -61,6 +63,12 @@ class MatrixOverlay:
         body_width = self.n_evad * self.cell_width
         body_height = self.n_pred * self.cell_height
 
+        content_width = self.start_x + self.id_width + body_width + 15
+        content_height = self.start_y + self.header_height + body_height + 20
+
+        self.width = min(self.max_width, content_width)
+        self.height = min(self.max_height, content_height)
+
         self.max_scroll_x = max(0, body_width - (self.width - self.id_width - self.start_x))
         self.max_scroll_y = max(0, body_height - (self.height - self.header_height - self.start_y))
 
@@ -79,7 +87,7 @@ class MatrixOverlay:
 
     def _create_title_surface(self):
         self.title_surface = pygame.Surface((self.width, 20), pygame.SRCALPHA)
-        title_text = f"PURSUIT TIME MATRIX [{self.n_pred}x{self.n_evad}] [ARROWS:SCROLL] [M:HIDE]"
+        title_text = f"PURSUIT TIME MATRIX [{self.n_pred}x{self.n_evad}] [ARROWS:SCROLL]"
         title = font_small.render(title_text, True, COLOR_HIGHLIGHT)
         self.title_surface.blit(title, (10, 0))
 

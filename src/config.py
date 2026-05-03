@@ -4,8 +4,8 @@ import pygame
 
 from src.core.utils import get_random_point
 
-WINDOW_WIDTH = 1200
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1080
 FPS = 250
 
 INITIAL_SCALE = 30.0
@@ -43,6 +43,7 @@ V_Es = [[1.68, 2.91, 3.34],
 D_0s = [15.29, 7.18, 18.80, 10.32]
 P_0s = [(13.56, 18.91), (-11.92, 0.48), (11.42, -7.84), (-13.37, 17.56)]
 C_0s = [(15.81, 4.84), (-6.08, -2.12), (-7.24, 16.11), (4.11, -10.79)]
+alphas = [1.05, 3.32, 2.88, 5.76]
 
 hs = [471, 194, 307, 166]
 vs = [9.9, 7.5, 13.8, 10.1]
