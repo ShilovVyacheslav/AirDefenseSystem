@@ -5,8 +5,8 @@ import numpy as np
 
 from src.core.utils import get_random_point
 
-WINDOW_WIDTH = 1440 # 1920
-WINDOW_HEIGHT = 810 # 1080
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1080
 FPS = 250
 
 INITIAL_SCALE = 30.0

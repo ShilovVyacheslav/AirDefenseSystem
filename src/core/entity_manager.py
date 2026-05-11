@@ -101,60 +101,92 @@ class EntityManager:
 
         return operation_time
 
-    def initialize_single_circle_mode(self, initial=False):
+    def initialize_single_circular_mode(self, data=None):
         self.clear_entities()
-        C_0 = config.C_0.copy()
-        D_0 = config.D_0
-        if initial:
-            evader = Evader(pos=config.C_0 + config.D_0 * pygame.Vector2(math.cos(config.beta), math.sin(config.beta)),
-                            speed=config.v, alpha=config.alpha, behavior=move_in_direction)
-            predator = Predator(pos=config.P_0, behavior=pursue_in_circular)
-        else:
-            C_0 = get_random_point()
-            D_0 = config.random.uniform(10, 30)
-            evader = Evader(pos=C_0 + D_0 * get_random_point().normalize(), behavior=move_in_direction)
-            predator = Predator(pos=get_random_point(), behavior=pursue_in_circular)
+
+        evader_data = data.evader if data and hasattr(data, 'evader') else {}
+        predator_data = data.predator if data and hasattr(data, 'predator') else {}
+
+        C_0 = pygame.Vector2(evader_data.get("C_0", get_random_point()))
+        D_0 = evader_data.get("D_0", random.uniform(10.0, 30.0))
+        V_E = evader_data.get("V_E", get_random_set(n=3))
+        A_E = evader_data.get("A_E", get_random_set(n=3, a=0, b=2*math.pi))
+        beta = evader_data.get("beta", random.uniform(0, 2*math.pi))
+
+        evader = Evader(
+            pos=C_0 + D_0 * pygame.Vector2(math.cos(beta), math.sin(beta)),
+            speed=evader_data.get("v", min(V_E)),
+            alpha=evader_data.get("alpha", min(A_E)),
+            behavior=move_in_direction
+        )
         evader.C_0 = C_0.copy()
         evader.D_0 = D_0
+        evader.V_E = sorted(V_E.copy(), reverse=True)
+        evader.A_E = sorted(A_E.copy(), reverse=True)
+
+        predator = Predator(
+            pos=predator_data.get("pos", get_random_point()),
+            speed=predator_data.get("V_P", random.uniform(3.5*max(V_E), 5.0*max(V_E))),
+            behavior=pursue_in_circular
+        )
         predator.C_0 = C_0.copy()
         predator.D_0 = D_0
-        predator.precompute_trajectory()
+        predator.V_E = sorted(V_E.copy(), reverse=True)
+        predator.A_E = sorted(A_E.copy(), reverse=True)
+
         self.evaders.append(evader)
         self.predators.append(predator)
         self.assignments[evader] = predator
+        predator.precompute_trajectory()
 
         return calculate_enumeration_circular_time(predator, evader)
 
-    def initialize_multiple_circle_mode(self, count: int = config.n, initial=False):
+    def initialize_multiple_circular_mode(self, data=None, count=constants.CIRCULAR_COUNT):
         self.clear_entities()
-        if initial:
-            P_0s = config.P_0s.copy()
-            C_0s = config.C_0s.copy()
-            V_Es = [config.V_Es[i] for i in range(count)]
-            vs = [min(V_Es[i]) for i in range(count)]
-            A_Es = [config.A_Es[i] for i in range(count)]
-            alphas = [min(A_Es[i]) for i in range(count)]
-            V_Ps = config.V_Ps.copy()
-            D_0s = config.D_0s.copy()
-        else:
-            P_0s = [get_random_point(-20, +20, -20, +20) for _ in range(count)]
-            C_0s = [get_random_point(-20, +20, -20, +20) for _ in range(count)]
-            V_Es = [config.V_E for i in range(count)]
-            vs = [random.choice(V_Es[i]) for i in range(count)]
-            A_Es = [config.A_E for i in range(count)]
-            alphas = [random.choice(A_Es[i]) for i in range(count)]
-            V_Ps = [config.V_P for i in range(count)]
-            D_0s = [random.uniform(5, 25) for i in range(count)]
+
+        evaders_data = data.evaders if (data and hasattr(data, 'evaders')) else {}
+        predators_data = data.predators if (data and hasattr(data, 'predators')) else {}
+
+        if data:
+            count = max(len(evaders_data), len(predators_data))
+
+        betas = [random.uniform(0, 2*math.pi) for _ in range(count)]
+
         for i in range(count):
-            self.evaders.append(Evader(pos=C_0s[i] + D_0s[i] * get_random_point().normalize(), speed=vs[i],
-                                       alpha=alphas[i], behavior=move_in_direction, track_id=i+1))
-            self.evaders[-1].C_0 = pygame.Vector2(C_0s[i])
-            self.evaders[-1].D_0 = D_0s[i]
-            self.evaders[-1].V_E = sorted(V_Es[i].copy(), reverse=True)
-            A_E = A_Es[i].copy()
-            self.evaders[-1].A_E = sorted([angle % (2*math.pi) for angle in A_E], reverse=True)
-            self.predators.append(Predator(pos=P_0s[i], speed=V_Ps[i],
-                                           behavior=pursue_in_circular, track_id=i+1))
+            key = f"E_{i+1}"
+            evader_data = evaders_data.get(key, {})
+
+            C_0 = pygame.Vector2(evader_data.get("C_0", get_random_point(-20, +20, -20, +20)))
+            D_0 = evader_data.get("D_0", random.uniform(5.0, 25.0))
+            V_E = evader_data.get("V_E", get_random_set(n=3))
+            A_E = evader_data.get("A_E", get_random_set(n=3, a=0, b=2*math.pi))
+            evader = Evader(
+                pos=C_0 + D_0 * pygame.Vector2(math.cos(betas[i]), math.sin(betas[i])),
+                speed=evader_data.get("v", min(V_E)),
+                alpha=evader_data.get("alpha", min(A_E)),
+                behavior=move_in_direction,
+                track_id=i+1
+            )
+            evader.C_0 = C_0.copy()
+            evader.D_0 = D_0
+            evader.V_E = sorted(V_E.copy(), reverse=True)
+            evader.A_E = sorted(A_E.copy(), reverse=True)
+            self.evaders.append(evader)
+
+        max_V_E = max([max(evader.V_E) for evader in self.evaders])
+
+        for i in range(count):
+            key = f"P_{i+1}"
+            predator_data = predators_data.get(key, {})
+
+            predator = Predator(
+                pos=predator_data.get("pos", get_random_point(-20, +20, -20, +20)),
+                speed=predator_data.get("V_P", random.uniform(3.0*max_V_E, 4.0*max_V_E)),
+                behavior=pursue_in_circular,
+                track_id=i+1
+            )
+            self.predators.append(predator)
+
         operation_time = self.apply_bottleneck_assignment(count, calculate_enumeration_circular_time)
         for evader, predator in tqdm(self.assignments.items()):
             predator.C_0 = evader.C_0.copy()

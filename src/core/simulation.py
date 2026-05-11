@@ -1,4 +1,5 @@
 import src.scenarios.spiral_data as spiral_data
+import src.scenarios.circular_data as circular_data
 
 from src.core.camera import Camera
 from src.core.entity_manager import EntityManager
@@ -25,20 +26,22 @@ class Simulation:
         self.matrix_overlay = MatrixOverlay()
         self.mode = "single_spiral"
         self.modes = {
-            "single_spiral": lambda data=True:
-                self.entity_manager.initialize_single_spiral_mode(spiral_data if data else None),
-            "multiple_spiral": lambda data=True:
-                self.entity_manager.initialize_multiple_spiral_mode(spiral_data if data else None),
-            "single_circle": lambda: self.entity_manager.initialize_single_circle_mode(initial=False),
-            "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=150),
+            "single_spiral": lambda use_data=False:
+                self.entity_manager.initialize_single_spiral_mode(spiral_data if use_data else None),
+            "multiple_spiral": lambda use_data=False:
+                self.entity_manager.initialize_multiple_spiral_mode(spiral_data if use_data else None),
+            "single_circular": lambda use_data=False:
+                self.entity_manager.initialize_single_circular_mode(circular_data if use_data else None),
+            "multiple_circular": lambda use_data=False:
+                self.entity_manager.initialize_multiple_circular_mode(circular_data if use_data else None),
             "single_targeting": lambda: self.entity_manager.initialize_single_targeting_mode(initial=False),
             "multiple_targeting": lambda: self.entity_manager.initialize_multiple_targeting_mode(count=150),
         }
         self.mode_keys = {
             pygame.K_1: "single_spiral",
             pygame.K_2: "multiple_spiral",
-            pygame.K_3: "single_circle",
-            pygame.K_4: "multiple_circle",
+            pygame.K_3: "single_circular",
+            pygame.K_4: "multiple_circular",
             pygame.K_5: "single_targeting",
             pygame.K_6: "multiple_targeting"
         }
@@ -56,7 +59,7 @@ class Simulation:
         self.camera = Camera((config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
         self.reset_entities()
 
-    def reset_entities(self, mode=None, use_data=False):
+    def reset_entities(self, mode=None, use_data=True):
         if mode is None:
             mode = self.mode
         self.interception_time = self.modes[mode](use_data)

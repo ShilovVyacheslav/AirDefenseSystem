@@ -102,12 +102,7 @@ def pursue_in_circular(predator, dt):
                                v_1 * (t_1 - t_0) * pygame.Vector2(math.cos(alpha_1), math.sin(alpha_1)) +
                                D_0 * pygame.Vector2(math.cos(gamma), math.sin(gamma)))
             return (touchdown_point - predator.pos).normalize() * V_P
-        '''
-        predator.t_checkpoints, x, y = compute_trajectory(D_0, V_P, v_1, gamma + math.pi - alpha_1, t_1 - t_0,
-                                                          theta_max=gamma + math.pi - alpha_1 + 2*math.pi, h=0.05)
-        predator.x_checkpoints = predator.reference_point.x - x * math.cos(alpha_1) + y * math.sin(alpha_1)
-        predator.y_checkpoints = predator.reference_point.y - x * math.sin(alpha_1) - y * math.cos(alpha_1)
-        '''
+
         predator.update_checkpoints()
         predator.stage = "circular"
 

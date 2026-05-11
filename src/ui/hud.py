@@ -24,7 +24,7 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
             f"> EVADER'S SPEED: {evader.speed:.2f}",
             f"> ASSUMED SPEED: {predator.assumed_speed:.2f}",
         ]
-        if mode.endswith("circle"):
+        if mode.endswith("circular"):
             info_right.append(f"> EVADER'S DIRECTION: {math.atan2(evader.direction.y, evader.direction.x):.2f}")
             info_right.append(f"> ASSUMED DIRECTION: {predator.assumed_angle:.2f}")
     elif mode.startswith("multiple"):
