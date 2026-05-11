@@ -1,3 +1,5 @@
+import src.scenarios.spiral_data as spiral_data
+
 from src.core.camera import Camera
 from src.core.entity_manager import EntityManager
 from src.ui.events import *
@@ -21,9 +23,12 @@ class Simulation:
         self.respawn = False
         self.provide_matrix = True
         self.matrix_overlay = MatrixOverlay()
+        self.mode = "single_spiral"
         self.modes = {
-            "single_spiral": lambda: self.entity_manager.initialize_single_spiral_mode(initial=False),
-            "multiple_spiral": lambda: self.entity_manager.initialize_multiple_spiral_mode(count=150),
+            "single_spiral": lambda data=True:
+                self.entity_manager.initialize_single_spiral_mode(spiral_data if data else None),
+            "multiple_spiral": lambda data=True:
+                self.entity_manager.initialize_multiple_spiral_mode(spiral_data if data else None),
             "single_circle": lambda: self.entity_manager.initialize_single_circle_mode(initial=False),
             "multiple_circle": lambda: self.entity_manager.initialize_multiple_circle_mode(count=150),
             "single_targeting": lambda: self.entity_manager.initialize_single_targeting_mode(initial=False),
@@ -51,11 +56,14 @@ class Simulation:
         self.camera = Camera((config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
         self.reset_entities()
 
-    def reset_entities(self, mode: str = "single_spiral"):
-        self.interception_time = self.modes.get(mode, self.modes["single_spiral"])()
+    def reset_entities(self, mode=None, use_data=False):
+        if mode is None:
+            mode = self.mode
+        self.interception_time = self.modes[mode](use_data)
         self.timer = 0
         if self.provide_matrix and mode.startswith("multiple"):
             self.matrix_overlay.reset(self.entity_manager)
+        self.mode = mode
 
     def show_loading_screen(self):
         show_loading_screen(self.screen)
@@ -68,11 +76,15 @@ class Simulation:
             if event.type == pygame.KEYDOWN:
                 if event.key in self.mode_keys:
                     self.reset_entities(self.mode_keys[event.key])
+                elif event.key == pygame.K_r:
+                    self.reset_entities(use_data=False)
+                elif event.key == pygame.K_i:
+                    self.reset_entities(use_data=True)
                 elif event.key == pygame.K_TAB:
                     config.cycle_style()
                 elif event.key == pygame.K_m:
                     self.matrix_overlay.toggle()
-                elif event.key == pygame.K_r and self.matrix_overlay.visible:
+                elif event.key == pygame.K_z and self.matrix_overlay.visible:
                     self.matrix_overlay.reset_scroll()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 self.dragging = True
@@ -92,14 +104,14 @@ class Simulation:
         self.entity_manager.update(dt)
         self.entity_manager.check_collisions()
         if self.respawn and self.entity_manager.check_collisions() == 0:
-            self.reset_entities(self.entity_manager.mode)
+            self.reset_entities(self.mode)
 
     def render(self, dt: float):
         draw_grid(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset)
         self.entity_manager.draw(self.screen, self.camera.scale, self.camera.offset)
         draw_hud(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset,
-                 self.entity_manager, dt, self.timer, self.interception_time, self.clock)
-        if self.entity_manager.mode.startswith("multiple"):
+                 self.entity_manager, dt, self.timer, self.interception_time, self.clock, self.mode)
+        if self.mode.startswith("multiple"):
             self.matrix_overlay.draw(self.screen)
 
     def run(self):

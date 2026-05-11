@@ -17,6 +17,10 @@ def get_random_point(a=-10, b=10, c=-10, d=10):
     return pygame.Vector2(random.uniform(a, b), random.uniform(c, d))
 
 
+def get_random_set(n=5, a=1.0, b=5.0):
+    return [random.uniform(a, b) for _ in range(n)]
+
+
 def calculate_spiral_time(predator, evader):
     V_P, v_1 = predator.speed, evader.speed
     if V_P <= v_1:
@@ -42,7 +46,7 @@ def calculate_targeting_time(predator, evader):
 
 
 def calculate_enumeration_spiral_time(predator, evader):
-    D_0 = predator.pos.distance_to(evader.C_0)
+    D_0 = predator.pos.distance_to(evader.pos)
     V_P = predator.speed
     V_E = sorted(evader.V_E, reverse=True)
     m = len(V_E)

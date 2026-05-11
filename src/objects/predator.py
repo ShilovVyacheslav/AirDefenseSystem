@@ -105,7 +105,7 @@ class Predator(Entity):
             gamma = math.atan2(y_P - y_C - v_j * t_1 * math.sin(alpha_i), x_P - x_C - v_j * t_1 * math.cos(alpha_i))
 
             t_checkpoints, x, y = compute_trajectory(D_0, V_P, v_j, gamma + math.pi - alpha_i, t_1,
-                                                     theta_max=gamma + math.pi - alpha_i + 2 * math.pi, h=0.05)
+                                                     theta_max=gamma + math.pi - alpha_i + 2 * math.pi, h=0.01)
             x_checkpoints = x_C - x * math.cos(alpha_i) + y * math.sin(alpha_i)
             y_checkpoints = y_C - x * math.sin(alpha_i) - y * math.cos(alpha_i)
 

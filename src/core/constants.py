@@ -1,1 +1,3 @@
 STEP = 1e-5
+
+SPIRAL_COUNT = 200

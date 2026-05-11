@@ -5,10 +5,9 @@ import src.config as config
 from src.core.coordinate_system import screen_to_world
 
 
-def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interception_time, clock):
+def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interception_time, clock, mode):
     mouse = config.pygame.mouse.get_pos()
     w = screen_to_world(mouse, scale, offset)
-    mode = entity_manager.mode
     info_left = [
         f"> SYSTEM STATUS: NOMINAL",
         #f"> OPERATIONAL READINESS: 100%",
