@@ -37,8 +37,7 @@ def draw_trail(entity, screen, scale, offset):
 
 def draw_predator(predator, screen, scale, offset):
     draw(predator, screen, scale, offset)
-    if predator.track_id.endswith("0004"):
-        predator.draw_trail(screen, scale, offset)
+    # predator.draw_trail(screen, scale, offset)
     p_screen = world_to_screen(predator.pos, scale, offset)
     r_px = max(3, int(predator.radius_world * scale))
     config.pygame.draw.circle(screen, predator.color, (int(p_screen.x), int(p_screen.y)), r_px, 1)

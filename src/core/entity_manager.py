@@ -59,7 +59,7 @@ class EntityManager:
             V_Es = [config.V_E for i in range(count)]
             vs = [random.choice(V_Es[i]) for i in range(count)]
             V_Ps = [config.V_P for i in range(count)]
-            alphas = [random.choice(config.A_E[i]) for i in range(count)]
+            alphas = [random.choice(config.A_E) for i in range(count)]
         for i in range(count):
             self.evaders.append(Evader(pos=C_0s[i], speed=vs[i], alpha=alphas[i], behavior=move_in_direction, track_id=i+1))
             self.evaders[-1].C_0 = self.evaders[-1].pos.copy()
@@ -228,10 +228,10 @@ class EntityManager:
             evader.draw(screen, scale, offset)
             predator.draw(screen, scale, offset)
 
-            reference_point = world_to_screen(predator.C_0, scale, offset)
-            pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-            if is_circle_mode:
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
-                reference_point = world_to_screen(predator.reference_point, scale, offset)
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+            # reference_point = world_to_screen(predator.C_0, scale, offset)
+            # pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+            # if is_circle_mode:
+            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+            #    reference_point = world_to_screen(predator.reference_point, scale, offset)
+            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)

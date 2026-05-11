@@ -1,6 +1,7 @@
 import math
 import random
 import pygame
+import numpy as np
 
 from src.core.utils import get_random_point
 
@@ -20,11 +21,11 @@ C_0 = get_random_point()
 k = 5
 m = 5
 
-A_E = [random.uniform(0, 2*math.pi) % (2*math.pi) for _ in range(k)]
+A_E = np.radians([67, -43, -119, 190, 134]) # np.random.uniform(0, 2*math.pi, size=k) #[random.uniform(0, 2*math.pi) % (2*math.pi) for _ in range(k)]
 V_E = [random.uniform(1.0, 5.0) for _ in range(m)]
 v = min(V_E)
 alpha = min([angle % (2*math.pi) for angle in A_E])
-V_P = 16.0
+V_P = 17.0
 
 D_0 = 5.0
 beta = math.radians(-72)
