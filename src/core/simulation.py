@@ -1,6 +1,4 @@
-import src.scenarios.spiral_data as spiral_data
-import src.scenarios.circular_data as circular_data
-
+from src.scenarios import spiral_data, circular_data, targeting_data
 from src.core.camera import Camera
 from src.core.entity_manager import EntityManager
 from src.ui.events import *
@@ -34,8 +32,10 @@ class Simulation:
                 self.entity_manager.initialize_single_circular_mode(circular_data if use_data else None),
             "multiple_circular": lambda use_data=False:
                 self.entity_manager.initialize_multiple_circular_mode(circular_data if use_data else None),
-            "single_targeting": lambda: self.entity_manager.initialize_single_targeting_mode(initial=False),
-            "multiple_targeting": lambda: self.entity_manager.initialize_multiple_targeting_mode(count=150),
+            "single_targeting": lambda use_data=False:
+                self.entity_manager.initialize_single_targeting_mode(targeting_data if use_data else None),
+            "multiple_targeting": lambda use_data=False:
+                self.entity_manager.initialize_multiple_targeting_mode(targeting_data if use_data else None),
         }
         self.mode_keys = {
             pygame.K_1: "single_spiral",

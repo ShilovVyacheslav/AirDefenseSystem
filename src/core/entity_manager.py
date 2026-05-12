@@ -197,40 +197,67 @@ class EntityManager:
 
         return operation_time
 
-    def initialize_single_targeting_mode(self, initial=False):
+    def initialize_single_targeting_mode(self, data=None):
         self.clear_entities()
-        h = config.h
-        if initial:
-            evader = Evader(pos=pygame.Vector2(0, h), speed=config.v, alpha=0, behavior=move_in_direction)
-        else:
-            h = random.uniform(50, 200)
-            evader = Evader(pos=pygame.Vector2(0, h), alpha=0, behavior=move_in_direction)
-        predator = Predator(pos=pygame.Vector2(0, 0), behavior=pursue_with_targeting)
+
+        evader_data = data.evader if data and hasattr(data, 'evader') else {}
+        predator_data = data.predator if data and hasattr(data, 'predator') else {}
+
+        evader = Evader(
+            pos=pygame.Vector2(0, evader_data.get("h", random.uniform(50, 200))),
+            speed=evader_data.get("v", random.uniform(10.0, 25.0)),
+            alpha=0,
+            behavior=move_in_direction
+        )
         evader.C_0 = evader.pos.copy()
+
+        predator = Predator(
+            pos=pygame.Vector2(0, 0),
+            speed=predator_data.get("V_P", random.uniform(1.05*evader.speed, 1.6*evader.speed)),
+            behavior=pursue_with_targeting
+        )
         predator.C_0 = evader.C_0.copy()
         predator.assumed_speed = evader.speed
+
         self.evaders.append(evader)
         self.predators.append(predator)
         self.assignments[evader] = predator
 
         return calculate_targeting_time(predator, evader)
 
-    def initialize_multiple_targeting_mode(self, count: int = config.n, initial=False):
+    def initialize_multiple_targeting_mode(self, data=None, count=constants.TARGETING_COUNT):
         self.clear_entities()
-        if initial:
-            hs = config.hs.copy()
-            V_Ps = config.V_Ps.copy()
-            vs = config.vs.copy()
-        else:
-            hs = [random.uniform(50, 200) for i in range(count)]
-            vs = [random.uniform(10, 25) for i in range(count)]
-            V_Ps = [random.uniform(max(vs) * 1.05, max(vs) * 1.6) for i in range(count)]
+
+        evaders_data = data.evaders if (data and hasattr(data, 'evaders')) else {}
+        predators_data = data.predators if (data and hasattr(data, 'predators')) else {}
+
+        if data:
+            count = max(len(evaders_data), len(predators_data))
+
         for i in range(count):
-            self.evaders.append(Evader(pos=pygame.Vector2(0, hs[i]), speed=vs[i], alpha=0,
-                                       behavior=move_in_direction, track_id=i+1))
-            self.evaders[-1].C_0 = self.evaders[-1].pos.copy()
-            self.predators.append(Predator(pos=pygame.Vector2(0, 0), speed=V_Ps[i],
+            key = f"E_{i+1}"
+            evader_data = evaders_data.get(key, {})
+
+            evader = Evader(
+                pos=pygame.Vector2(0, evader_data.get("h", random.uniform(50, 200))),
+                speed=evader_data.get("v", random.uniform(10.0, 25.0)),
+                alpha=0,
+                behavior=move_in_direction,
+                track_id=i+1
+            )
+            evader.C_0 = evader.pos.copy()
+            self.evaders.append(evader)
+
+        max_v = max([evader.speed for evader in self.evaders])
+
+        for i in range(count):
+            key = f"P_{i+1}"
+            predator_data = predators_data.get(key, {})
+
+            self.predators.append(Predator(pos=pygame.Vector2(0, 0),
+                                           speed=predator_data.get("V_P", random.uniform(1.05*max_v, 1.6*max_v)),
                                            behavior=pursue_with_targeting, track_id=i+1))
+
         operation_time = self.apply_bottleneck_assignment(count, calculate_targeting_time)
         for evader, predator in self.assignments.items():
             predator.C_0 = evader.C_0.copy()
