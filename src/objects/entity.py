@@ -3,14 +3,15 @@ import random
 
 import pygame
 
-from src import config
 from src.core.utils import get_random_set
 from src.ui.entity import draw, draw_trail
 
 
 class Entity:
-    def __init__(self, pos, speed, radius_world=1, color=(240, 240, 240), behavior=None, track_id=None):
+    def __init__(self, pos, speed=None, radius_world=1, color=(240, 240, 240), behavior=None, track_id=None):
         self.pos = pygame.Vector2(pos)
+        if speed is None:
+            speed = random.uniform(1.0, 5.0)
         self.speed = speed
         self.V_E = get_random_set()
         self.A_E = get_random_set(a=0, b=2*math.pi)

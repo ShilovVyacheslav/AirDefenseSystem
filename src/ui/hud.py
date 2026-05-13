@@ -10,8 +10,6 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
     w = screen_to_world(mouse, scale, offset)
     info_left = [
         f"> SYSTEM STATUS: NOMINAL",
-        #f"> OPERATIONAL READINESS: 100%",
-        #f"> NETWORK: SECURE",
         f"> MODE: {mode.upper().replace('_', '-')}",
         f"> TIME: {timer:.3f}s / {interception_time:.3f}s"
     ]

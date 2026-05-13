@@ -42,6 +42,8 @@ def calculate_targeting_time(predator, evader):
     h = evader.pos.y
     V_P = predator.speed
     v = evader.speed
+    if V_P <= v:
+        return float('inf')
     return V_P * h / (V_P**2 - v**2)
 
 
@@ -49,6 +51,8 @@ def calculate_enumeration_spiral_time(predator, evader):
     D_0 = predator.pos.distance_to(evader.pos)
     V_P = predator.speed
     V_E = sorted(evader.V_E, reverse=True)
+    if V_P <= V_E[0]:
+        return float('inf')
     m = len(V_E)
     '''
     t_1, t_2pi, d = [0.0] * (m + 1), [0.0] * (m + 1), [0.0] * (m + 1)
@@ -84,6 +88,9 @@ def fast_ellipeinc(val):
 
 @njit(cache=True)
 def _calc_circular_core(D_0, V_P, V_E, A_E, x_C_0, y_C_0, x_P_0, y_P_0):
+    if V_P <= max(V_E):
+        return float('inf')
+
     m = len(V_E)
     k = len(A_E)
     total = m * k

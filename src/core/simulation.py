@@ -111,7 +111,7 @@ class Simulation:
 
     def render(self, dt: float):
         draw_grid(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset)
-        self.entity_manager.draw(self.screen, self.camera.scale, self.camera.offset)
+        self.entity_manager.draw(self.screen, self.camera.scale, self.camera.offset, self.mode)
         draw_hud(self.screen, config.WINDOW_WIDTH, config.WINDOW_HEIGHT, self.camera.scale, self.camera.offset,
                  self.entity_manager, dt, self.timer, self.interception_time, self.clock, self.mode)
         if self.mode.startswith("multiple"):

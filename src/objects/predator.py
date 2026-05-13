@@ -10,7 +10,7 @@ from scipy.special import ellipeinc
 
 
 class Predator(Entity):
-    def __init__(self, pos, speed=config.V_P, behavior=None, track_id=None):
+    def __init__(self, pos, speed=None, behavior=None, track_id=None):
         super().__init__(pos, speed, radius_world=config.PREDATOR_RADIUS_WORLD,
                          color=config.COLOR_FRIENDLY, behavior=behavior, track_id=track_id)
         self.stage = "free"
