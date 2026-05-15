@@ -83,6 +83,8 @@ class Simulation:
                     self.reset_entities(use_data=False)
                 elif event.key == pygame.K_i:
                     self.reset_entities(use_data=True)
+                elif event.key == pygame.K_ESCAPE:
+                    self.running = False
                 elif event.key == pygame.K_TAB:
                     config.cycle_style()
                 elif event.key == pygame.K_m:
@@ -105,8 +107,8 @@ class Simulation:
     def update_state(self, dt: float):
         self.timer += dt
         self.entity_manager.update(dt)
-        self.entity_manager.check_collisions()
-        if self.respawn and self.entity_manager.check_collisions() == 0:
+        remaining = self.entity_manager.check_collisions()
+        if self.respawn and remaining == 0:
             self.reset_entities(self.mode)
 
     def render(self, dt: float):

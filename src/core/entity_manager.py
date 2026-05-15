@@ -4,7 +4,6 @@ import random
 import numpy as np
 import pygame
 
-import src.config as config
 from src.core import constants
 
 from src.core.bottleneck_algorithm import bottleneck_algorithm
@@ -307,15 +306,15 @@ class EntityManager:
         return len(self.assignments)
 
     def draw(self, screen, scale, offset, mode):
-        is_circle_mode = mode.endswith("circular")
+        # is_circle_mode = mode.endswith("circular")
         for evader, predator in self.assignments.items():
             evader.draw(screen, scale, offset)
             predator.draw(screen, scale, offset)
 
-            reference_point = world_to_screen(predator.C_0, scale, offset)
-            pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-            if is_circle_mode:
-                pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
-                # reference_point = world_to_screen(predator.reference_point, scale, offset)
-                # pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
-                # pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+            # reference_point = world_to_screen(predator.C_0, scale, offset)
+            # pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+            # if is_circle_mode:
+            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
+            #    reference_point = world_to_screen(predator.reference_point, scale, offset)
+            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, 4)
+            #    pygame.draw.circle(screen, config.COLOR_ALERT, reference_point, int(predator.D_0 * scale), 1)
