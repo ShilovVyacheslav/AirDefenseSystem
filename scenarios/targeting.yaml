@@ -1,0 +1,25 @@
+mode: targeting
+
+predators:
+  - id: P1
+    speed: 16.5
+  - id: P2
+    speed: 17.2
+  - id: P3
+    speed: 21.4
+  - id: P4
+    speed: 19.8
+
+evaders:
+  - id: E1
+    speed: 9.9
+    height: 471
+  - id: E2
+    speed: 7.5
+    height: 194
+  - id: E3
+    speed: 13.8
+    height: 307
+  - id: E4
+    speed: 10.1
+    height: 166

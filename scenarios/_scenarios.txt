@@ -1,0 +1,98 @@
+================================================================================
+ SCENARIO FILE REFERENCE
+================================================================================
+
+Scenarios are written in YAML (.yaml) or JSON (.json). Both formats are
+read identically; pick whichever you prefer.
+
+--------------------------------------------------------------------------------
+ STRUCTURE
+--------------------------------------------------------------------------------
+
+  mode        Which interception model to use:
+                spiral | circular | targeting
+
+  predators   The pursuing craft (a list).
+  evaders     The targets (a list).
+
+  One entry in a list  -> single-target run.
+  Several entries      -> multi-target run (bottleneck assignment).
+
+Coordinates are written as [x, y] (square brackets). Lists of numbers are
+written as [a, b, c].
+
+--------------------------------------------------------------------------------
+ FIELD NAMES
+--------------------------------------------------------------------------------
+
+Every field has a human name and a math name (the symbol from the
+derivations). Either is accepted. Do NOT give both names for the same
+field in one entry.
+
+  human     math    meaning
+  -------   -----   ----------------------------------------------------
+  pos       pos     start position [x, y]
+  speed     V_P     predator speed (single number)
+  speed     v       evader speed in targeting mode (single number)
+  speeds    V_E     evader admissible speeds (list)
+  center    C_0     orbit center [x, y]          (circular only)
+  radius    D_0     orbit radius (number)        (circular only)
+  angles    A_E     admissible heading angles, radians, list (circular)
+  height    h       target altitude (number)     (targeting only)
+
+  id        optional label, used only in logs and readouts.
+
+--------------------------------------------------------------------------------
+ FIELDS BY MODE
+--------------------------------------------------------------------------------
+
+  SPIRAL
+    predator : pos, speed
+    evader   : pos, speeds
+
+  CIRCULAR
+    predator : pos, speed
+    evader   : center, radius, speeds, angles
+    note     : the evader has no 'pos'. Its start position is derived
+               from the orbit (center + radius + angle).
+
+  TARGETING
+    predator : speed            (always launches from origin [0, 0])
+    evader   : height, speed
+
+--------------------------------------------------------------------------------
+ EXAMPLE  (spiral, YAML)
+--------------------------------------------------------------------------------
+
+  mode: spiral
+
+  predators:
+    - id: P1
+      pos: [13.56, 18.91]
+      speed: 18.34
+
+  evaders:
+    - id: E1
+      pos: [15.81, 4.84]
+      speeds: [1.68, 2.91, 3.34]
+
+--------------------------------------------------------------------------------
+ EXAMPLE  (targeting, JSON)
+--------------------------------------------------------------------------------
+
+  {
+    "mode": "targeting",
+    "predators": [ { "id": "P1", "speed": 16.5 } ],
+    "evaders":   [ { "id": "E1", "speed": 9.9, "height": 471 } ]
+  }
+
+--------------------------------------------------------------------------------
+ COMMON ERRORS
+--------------------------------------------------------------------------------
+
+  Round brackets in pos     ->  use [x, y], not (x, y).
+  Same field twice          ->  e.g. both 'speed' and 'V_P'; use one.
+  'pos' on a circular evader->  not allowed; define the orbit instead.
+  Missing 'mode'            ->  the file must name its mode.
+
+================================================================================

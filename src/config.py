@@ -1,10 +1,10 @@
 import pygame
 
-# WINDOW_WIDTH = 1536
-# WINDOW_HEIGHT = 864
+WINDOW_WIDTH = 1536
+WINDOW_HEIGHT = 864
 
-WINDOW_WIDTH = 1920
-WINDOW_HEIGHT = 1080
+# WINDOW_WIDTH = 1920
+# WINDOW_HEIGHT = 1080
 
 FPS = 250
 
@@ -31,42 +31,58 @@ STYLES = {
             "STATS_BG": (0, 0, 0, 150),
         }
     },
-    "cod_mw_3": {
-        "NAME": "G.A.D.C.I. PROTOCOL",
+    "shadow": {
+        "NAME": "SHADOW COMPANY // INTEL SYSTEMS",
         "COLORS": {
-            "BG": (15, 20, 15),
-            "GRID_MAJOR": (45, 55, 45),
-            "GRID_MINOR": (30, 35, 30),
-            "AXIS": (80, 90, 80),
-            "TEXT": (180, 230, 150),
-            "HIGHLIGHT": (200, 220, 255),
-            "HUD_BG": (10, 20, 10, 200),
-            "STATS_BG": (5, 10, 5, 180),
-            "FRIENDLY": (120, 200, 255),
-            "PREDATOR": (150, 220, 180),
-            "TARGET": (255, 70, 30),
-            "ALERT": (255, 180, 40),
-        }
-    },
-    "spectre": {
-        "NAME": "G.A.D.C.I. PROTOCOL",
-        "COLORS": {
-            "BG": (8, 12, 16),
-            "GRID_MAJOR": (30, 40, 50),
-            "GRID_MINOR": (20, 28, 35),
-            "AXIS": (60, 80, 100),
-            "TEXT": (200, 210, 220),
-            "HIGHLIGHT": (255, 255, 255),
-            "FRIENDLY": (0, 180, 255),
-            "PREDATOR": (100, 200, 200),
-            "TARGET": (255, 40, 0),
-            "ALERT": (255, 140, 0),
-            "HUD_BG": (12, 18, 24, 220),
-            "STATS_BG": (5, 8, 12, 200),
-        }
+            # Almost-black blue tint — sampled background of the reference (2,4,8)
+            "BG": (4, 6, 10),
+
+            # Cold steel grid. Major lines barely-there, minor nearly invisible —
+            # the reference grid is a faint substrate, not a feature.
+            "GRID_MAJOR": (26, 30, 38),
+            "GRID_MINOR": (14, 17, 22),
+
+            # Axes read as structural lines, neutral gray (sampled 95,98,102 lifted
+            # for contrast → AA on BG).
+            "AXIS": (120, 128, 138),
+
+            # Primary readout text: cold off-white with a hair of blue, like the
+            # blueprint linework (sampled 183,185,189). AAA contrast on BG.
+            "TEXT": (200, 205, 210),
+
+            # Brightest white — emphasis, active labels, selected entity.
+            "HIGHLIGHT": (235, 238, 242),
+
+            # THE accent. Bright alert red (sampled glow 213,14,19) — alarms,
+            # captures, locked state. Use sparingly; that restraint is the look.
+            "ALERT": (215, 30, 32),
+
+            # Friendly / interceptors are the white wireframe craft of the
+            # reference, NOT colored. Identity comes from shape, red is reserved
+            # for threats.
+            "FRIENDLY": (200, 205, 210),
+
+            # Targets / evaders are the threat — red, like every locked SAM site
+            # and command unit on the reference map.
+            "TARGET": (215, 30, 32),
+
+            # Predator pursuit craft: bright white linework.
+            "PREDATOR": (235, 238, 242),
+
+            # Panel chrome — translucent near-black so the grid faintly shows
+            # through, matching the reference's layered glass panels.
+            "HUD_BG": (10, 13, 18, 200),
+            "STATS_BG": (6, 8, 12, 170),
+
+            # --- optional extras (safe to ignore if the engine doesn't read them) ---
+            # Dim red for decorative threat rings / inactive target reticles.
+            "ALERT_DIM": (168, 40, 44),
+            # Muted gray for secondary labels, units, footer chrome.
+            "TEXT_MUTED": (96, 102, 110),
+        },
     },
 }
-_current_style = "gadci"
+_current_style = "shadow"
 (COLOR_BG, COLOR_GRID, COLOR_GRID_MAJOR, COLOR_GRID_MINOR,
  COLOR_AXIS, COLOR_TEXT, COLOR_HIGHLIGHT, COLOR_ALERT,
  COLOR_FRIENDLY, COLOR_TARGET, COLOR_PREDATOR,
