@@ -1,6 +1,6 @@
 import pygame
 
-import config
+from src import config
 
 from src.core.modes import MODE_KEYS
 from src.ui.events import handle_event

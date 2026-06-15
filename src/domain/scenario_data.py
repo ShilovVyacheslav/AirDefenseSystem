@@ -1,16 +1,14 @@
-def single_blocks(data):
-    evader = data.evader if data and hasattr(data, "evader") else {}
-    predator = data.predator if data and hasattr(data, "predator") else {}
-    return evader, predator
+def entity_blocks(data):
+    evaders = data.evaders if (data and hasattr(data, "evaders")) else []
+    predators = data.predators if (data and hasattr(data, "predators")) else []
+    return list(evaders), list(predators)
 
 
-def multiple_blocks(data):
-    evaders = data.evaders if (data and hasattr(data, "evaders")) else {}
-    predators = data.predators if (data and hasattr(data, "predators")) else {}
-    return evaders, predators
+def block_at(blocks, index):
+    return blocks[index] if index < len(blocks) else {}
 
 
-def resolve_count(data, evaders_data, predators_data, default):
+def resolve_count(data, evaders, predators, default):
     if data:
-        return max(len(evaders_data), len(predators_data))
+        return max(len(evaders), len(predators))
     return default

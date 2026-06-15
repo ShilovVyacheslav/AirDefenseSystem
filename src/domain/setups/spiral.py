@@ -2,11 +2,11 @@ import math
 import random
 from typing import List
 
-from core.utils import get_random_point, get_random_set, calculate_enumeration_spiral_time
-from domain.entities.evader import Evader
-from domain.entities.predator import Predator
-from domain.motion.pursuit.spiral import pursue_in_spiral
-from domain.setups import ModeSetup
+from src.core.utils import get_random_point, get_random_set, calculate_enumeration_spiral_time
+from src.domain.entities.evader import Evader
+from src.domain.entities.predator import Predator
+from src.domain.motion.pursuit.spiral import pursue_in_spiral
+from src.domain.setups import ModeSetup
 
 
 class SpiralSetup(ModeSetup):
@@ -19,11 +19,7 @@ class SpiralSetup(ModeSetup):
 
     def create_evader(self, index: int, evader_data: dict, ctx: dict) -> Evader:
         V_E = evader_data.get("V_E", get_random_set())
-
-        if self.single:
-            alpha_default = random.uniform(0, 2 * math.pi)
-        else:
-            alpha_default = random.choice(ctx["alphas"])
+        alpha_default = random.uniform(0, 2 * math.pi) if self.single else ctx["alphas"][index]
 
         evader = Evader(
             pos=evader_data.get("pos", get_random_point(*self._spawn_bounds())),

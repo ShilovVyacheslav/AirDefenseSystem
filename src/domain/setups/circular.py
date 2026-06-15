@@ -4,11 +4,11 @@ from typing import List
 
 import pygame
 
-from core.utils import get_random_point, get_random_set, calculate_enumeration_circular_time
-from domain.entities.evader import Evader
-from domain.entities.predator import Predator
-from domain.motion.pursuit.circular import pursue_in_circular
-from domain.setups import ModeSetup
+from src.core.utils import get_random_point, get_random_set, calculate_enumeration_circular_time
+from src.domain.entities.evader import Evader
+from src.domain.entities.predator import Predator
+from src.domain.motion.pursuit.circular import pursue_in_circular
+from src.domain.setups import ModeSetup
 
 
 class CircularSetup(ModeSetup):
@@ -27,11 +27,7 @@ class CircularSetup(ModeSetup):
         D_0 = evader_data.get("D_0", self._d0_default())
         V_E = evader_data.get("V_E", get_random_set(n=3))
         A_E = evader_data.get("A_E", get_random_set(n=3, a=0, b=2 * math.pi))
-
-        if self.single:
-            beta = evader_data.get("beta", random.uniform(0, 2 * math.pi))
-        else:
-            beta = ctx["betas"][index]
+        beta = evader_data.get("beta", random.uniform(0, 2 * math.pi)) if self.single else ctx["betas"][index]
 
         evader = Evader(
             pos=C_0 + D_0 * pygame.Vector2(math.cos(beta), math.sin(beta)),

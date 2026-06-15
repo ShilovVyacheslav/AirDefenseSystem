@@ -3,11 +3,11 @@ from typing import List
 
 import pygame
 
-from core.utils import calculate_targeting_time
-from domain.entities.evader import Evader
-from domain.entities.predator import Predator
-from domain.motion.pursuit.targeting import pursue_with_targeting
-from domain.setups import ModeSetup
+from src.core.utils import calculate_targeting_time
+from src.domain.entities.evader import Evader
+from src.domain.entities.predator import Predator
+from src.domain.motion.pursuit.targeting import pursue_with_targeting
+from src.domain.setups import ModeSetup
 
 
 class TargetingSetup(ModeSetup):

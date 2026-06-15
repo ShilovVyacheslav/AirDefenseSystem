@@ -1,9 +1,10 @@
 import pygame
 
-import config
+from src import config
 
+from src import loaders
 from src.core.camera import Camera
-from domain.entity_manager import EntityManager
+from src.domain.entity_manager import EntityManager
 from src.core.input_handler import InputHandler
 from src.core.modes import Mode, ModeRegistry
 from src.core.renderer import Renderer
@@ -23,6 +24,13 @@ class Simulation:
         self.respawn = app_config.respawn
         self.provide_matrix = app_config.matrix
         self.mode = Mode(app_config.mode)
+
+        self.scenario_data = None
+        self.scenario_mode = None
+        if app_config.scenario_path:
+            self.scenario_data = loaders.load_scenario(app_config.scenario_path)
+            self.scenario_mode = Mode(loaders.mode_from_scenario(self.scenario_data))
+            self.mode = self.scenario_mode
 
         self.timer = 0.0
         self.interception_time = 0.0
@@ -53,7 +61,8 @@ class Simulation:
     def reset_entities(self, mode: Mode = None, use_data: bool = True) -> None:
         if mode is None:
             mode = self.mode
-        self.interception_time = self.mode_registry.initialize(mode, use_data)
+        override = self.scenario_data if (mode == self.scenario_mode) else None
+        self.interception_time = self.mode_registry.initialize(mode, use_data, override)
         self.timer = 0.0
         if self.provide_matrix and mode.is_multiple:
             self.matrix_overlay.reset(self.entity_manager)

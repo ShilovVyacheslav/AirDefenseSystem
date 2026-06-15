@@ -1,4 +1,4 @@
-import config
+from src import config
 
 from src.core.modes import Mode
 from src.ui.grid import draw_grid
@@ -17,7 +17,7 @@ class Renderer:
         w, h = config.WINDOW_WIDTH, config.WINDOW_HEIGHT
 
         draw_grid(self.screen, w, h, self.camera.scale, self.camera.offset)
-        self.entity_manager.draw(self.screen, self.camera.scale, self.camera.offset, mode.value)
+        self.entity_manager.draw(self.screen, self.camera.scale, self.camera.offset)
         draw_hud(self.screen, w, h, self.camera.scale, self.camera.offset,
                  self.entity_manager, dt, timer, interception_time, clock, mode.value)
 

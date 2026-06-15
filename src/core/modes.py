@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from src.scenarios import spiral_data, circular_data, targeting_data
+from src import loaders
 
 
 class Mode(Enum):
@@ -16,7 +16,7 @@ class Mode(Enum):
 
     @property
     def is_multiple(self) -> bool:
-        return self.name.startswith("multiple")
+        return self.name.startswith("MULTIPLE")
 
 
 MODE_KEYS = {
@@ -33,14 +33,20 @@ class ModeRegistry:
 
     def __init__(self, entity_manager):
         self._table = {
-            Mode.SINGLE_SPIRAL: (entity_manager.initialize_single_spiral_mode, spiral_data),
-            Mode.MULTIPLE_SPIRAL: (entity_manager.initialize_multiple_spiral_mode, spiral_data),
-            Mode.SINGLE_CIRCULAR: (entity_manager.initialize_single_circular_mode, circular_data),
-            Mode.MULTIPLE_CIRCULAR: (entity_manager.initialize_multiple_circular_mode, circular_data),
-            Mode.SINGLE_TARGETING: (entity_manager.initialize_single_targeting_mode, targeting_data),
-            Mode.MULTIPLE_TARGETING: (entity_manager.initialize_multiple_targeting_mode, targeting_data),
+            Mode.SINGLE_SPIRAL: entity_manager.initialize_single_spiral_mode,
+            Mode.MULTIPLE_SPIRAL: entity_manager.initialize_multiple_spiral_mode,
+            Mode.SINGLE_CIRCULAR: entity_manager.initialize_single_circular_mode,
+            Mode.MULTIPLE_CIRCULAR: entity_manager.initialize_multiple_circular_mode,
+            Mode.SINGLE_TARGETING: entity_manager.initialize_single_targeting_mode,
+            Mode.MULTIPLE_TARGETING: entity_manager.initialize_multiple_targeting_mode,
         }
 
-    def initialize(self, mode: Mode, use_data: bool) -> float:
-        initializer, data = self._table[mode]
-        return initializer(data if use_data else None)
+    def initialize(self, mode: Mode, use_data: bool, override_data=None) -> float:
+        if not use_data:
+            data = None
+        elif override_data is not None:
+            data = override_data
+        else:
+            scenario = mode.value.split("_", 1)[1]
+            data = loaders.load_default(scenario)
+        return self._table[mode](data)

@@ -2,7 +2,7 @@ import math
 import numpy as np
 import pygame
 
-from core.utils import calculate_circular_touchdown_time, calculate_circular_revolution_time
+from src.core.utils import calculate_circular_touchdown_time, calculate_circular_revolution_time
 
 
 def pursue_in_circular(predator, dt):

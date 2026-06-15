@@ -1,7 +1,7 @@
-from domain.setups.base import ModeSetup
-from domain.setups.circular import CircularSetup
-from domain.setups.spiral import SpiralSetup
-from domain.setups.targeting import TargetingSetup
+from src.domain.setups.base import ModeSetup
+from src.domain.setups.circular import CircularSetup
+from src.domain.setups.spiral import SpiralSetup
+from src.domain.setups.targeting import TargetingSetup
 
 
 __all__ = [

@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from domain.entities.evader import Evader
-from domain.entities.predator import Predator
-from domain.motion.direct import move_in_direction
+from src.domain.entities.evader import Evader
+from src.domain.entities.predator import Predator
+from src.domain.motion.direct import move_in_direction
 
 
 class ModeSetup(ABC):
@@ -35,5 +35,3 @@ class ModeSetup(ABC):
     @abstractmethod
     def interception_time(self):
         ...
-
-    show_link_progress: bool = False
