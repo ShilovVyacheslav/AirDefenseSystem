@@ -1,10 +1,9 @@
 import math
 import random
-
 import pygame
 
-from src.core.utils import get_random_set
 from src.ui.entity import draw, draw_trail
+from src.utils.random_init import get_random_set
 
 
 class Entity:

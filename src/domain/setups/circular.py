@@ -4,11 +4,12 @@ from typing import List
 
 import pygame
 
-from src.core.utils import get_random_point, get_random_set, calculate_enumeration_circular_time
+from src.compute.interception.circular import calculate_enumeration_circular_time
 from src.domain.entities.evader import Evader
 from src.domain.entities.predator import Predator
 from src.domain.motion.pursuit.circular import pursue_in_circular
 from src.domain.setups import ModeSetup
+from src.utils.random_init import get_random_set, get_random_point
 
 
 class CircularSetup(ModeSetup):

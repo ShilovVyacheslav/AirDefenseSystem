@@ -1,7 +1,7 @@
 import pygame
 
 from src import config
-from src.core.coordinate_system import world_to_screen
+from src.utils.coordinate_system import world_to_screen
 
 
 def draw(entity, screen, scale, offset):

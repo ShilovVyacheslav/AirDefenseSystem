@@ -1,10 +1,9 @@
 import math
-
 import pygame
 
+from src import config
+from src.compute.interception.circular import compute_trajectory
 from src.domain.entities.entity import Entity
-from src.core.coordinate_system import *
-from src.core.utils import compute_trajectory
 from src.ui.entity import draw_predator
 from scipy.special import ellipeinc
 

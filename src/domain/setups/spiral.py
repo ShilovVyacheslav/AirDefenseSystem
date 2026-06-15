@@ -2,11 +2,12 @@ import math
 import random
 from typing import List
 
-from src.core.utils import get_random_point, get_random_set, calculate_enumeration_spiral_time
+from src.compute.interception.spiral import calculate_enumeration_spiral_time
 from src.domain.entities.evader import Evader
 from src.domain.entities.predator import Predator
 from src.domain.motion.pursuit.spiral import pursue_in_spiral
 from src.domain.setups import ModeSetup
+from src.utils.random_init import get_random_set, get_random_point
 
 
 class SpiralSetup(ModeSetup):

@@ -3,7 +3,7 @@ from typing import List
 
 import pygame
 
-from src.core.utils import calculate_targeting_time
+from src.compute.interception.targeting import calculate_targeting_time
 from src.domain.entities.evader import Evader
 from src.domain.entities.predator import Predator
 from src.domain.motion.pursuit.targeting import pursue_with_targeting

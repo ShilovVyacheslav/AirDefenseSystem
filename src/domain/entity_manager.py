@@ -1,7 +1,7 @@
 import numpy as np
 
 from src.core import constants
-from src.core.bottleneck_algorithm import bottleneck_algorithm
+from src.compute.bottleneck_algorithm import bottleneck_algorithm
 from src.domain.entities.evader import Evader
 from src.domain.entities.predator import Predator
 from src.domain.scenario_data import resolve_count, entity_blocks, block_at
@@ -33,7 +33,8 @@ class EntityManager:
     def __build(self, setup_cls, data, count=1) -> float:
         self.__clear_entities()
         evaders_data, predators_data = entity_blocks(data)
-        count = resolve_count(data, evaders_data, predators_data, count)
+        if count != 1:
+            count = resolve_count(data, evaders_data, predators_data, count)
 
         setup: ModeSetup = setup_cls(single=(count == 1))
 

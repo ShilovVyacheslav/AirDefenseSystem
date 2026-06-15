@@ -2,7 +2,7 @@ import math
 
 import src.config as config
 
-from src.core.coordinate_system import screen_to_world
+from src.utils.coordinate_system import screen_to_world
 
 
 def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interception_time, clock, mode):

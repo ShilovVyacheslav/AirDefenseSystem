@@ -1,6 +1,6 @@
 import math
 import src.config as config
-from src.core.coordinate_system import screen_to_world, world_to_screen
+from src.utils.coordinate_system import screen_to_world, world_to_screen
 
 
 def draw_grid(screen, W, H, scale, offset):

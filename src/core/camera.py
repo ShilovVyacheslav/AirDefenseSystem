@@ -1,6 +1,6 @@
 import src.config as config
 
-from src.core.coordinate_system import screen_to_world
+from src.utils.coordinate_system import screen_to_world
 
 
 class Camera:
