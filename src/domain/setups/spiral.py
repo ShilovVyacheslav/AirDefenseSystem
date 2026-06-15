@@ -5,8 +5,8 @@ from typing import List
 from core.utils import get_random_point, get_random_set, calculate_enumeration_spiral_time
 from domain.entities.evader import Evader
 from domain.entities.predator import Predator
+from domain.motion.pursuit.spiral import pursue_in_spiral
 from domain.setups import ModeSetup
-from domain.strategies.behaviors import pursue_in_spiral
 
 
 class SpiralSetup(ModeSetup):

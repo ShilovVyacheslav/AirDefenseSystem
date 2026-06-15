@@ -7,8 +7,8 @@ import pygame
 from core.utils import get_random_point, get_random_set, calculate_enumeration_circular_time
 from domain.entities.evader import Evader
 from domain.entities.predator import Predator
+from domain.motion.pursuit.circular import pursue_in_circular
 from domain.setups import ModeSetup
-from domain.strategies.behaviors import pursue_in_circular
 
 
 class CircularSetup(ModeSetup):

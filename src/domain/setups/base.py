@@ -3,7 +3,7 @@ from typing import List
 
 from domain.entities.evader import Evader
 from domain.entities.predator import Predator
-from domain.strategies.behaviors import move_in_direction
+from domain.motion.direct import move_in_direction
 
 
 class ModeSetup(ABC):

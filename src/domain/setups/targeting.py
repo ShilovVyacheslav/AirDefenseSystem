@@ -6,8 +6,8 @@ import pygame
 from core.utils import calculate_targeting_time
 from domain.entities.evader import Evader
 from domain.entities.predator import Predator
+from domain.motion.pursuit.targeting import pursue_with_targeting
 from domain.setups import ModeSetup
-from domain.strategies.behaviors import pursue_with_targeting
 
 
 class TargetingSetup(ModeSetup):
