@@ -2,9 +2,9 @@ import math
 import random
 import pygame
 
+from domain.entities.entity import Entity
 from src.core.coordinate_system import *
 from src.core.utils import get_random_set
-from src.objects.entity import Entity
 from src.ui.entity import draw_evader
 
 

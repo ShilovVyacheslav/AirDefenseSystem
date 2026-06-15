@@ -18,6 +18,7 @@ class InputHandler:
     def process(self) -> bool:
         running = True
         for event in pygame.event.get():
+            # noinspection PyTestUnpassedFixture
             if self.matrix_overlay.handle_event(event):
                 continue
 
@@ -26,7 +27,7 @@ class InputHandler:
             )
 
             if event.type == pygame.KEYDOWN:
-                if not self._handle_key(event):
+                if not self._handle_key(event.key):
                     running = False
             else:
                 self._handle_mouse(event)
@@ -34,8 +35,7 @@ class InputHandler:
         self._update_drag()
         return running
 
-    def _handle_key(self, event) -> bool:
-        key = event.key
+    def _handle_key(self, key) -> bool:
 
         if key in MODE_KEYS:
             self.simulation.reset_entities(MODE_KEYS[key])

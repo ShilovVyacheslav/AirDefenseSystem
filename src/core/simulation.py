@@ -3,7 +3,7 @@ import pygame
 import config
 
 from src.core.camera import Camera
-from src.core.entity_manager import EntityManager
+from domain.entity_manager import EntityManager
 from src.core.input_handler import InputHandler
 from src.core.modes import Mode, ModeRegistry
 from src.core.renderer import Renderer
