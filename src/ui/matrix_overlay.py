@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 
 from src import config
+from src.ui import chrome
 
 
 class MatrixOverlay:
@@ -88,82 +89,93 @@ class MatrixOverlay:
 
     def _create_title_surface(self):
         self.title_surface = pygame.Surface((self.width, 20), pygame.SRCALPHA)
-        title_text = f"PURSUIT TIME MATRIX [{self.n_pred}x{self.n_evad}] [ARROWS:SCROLL]"
-        title = config.font_small.render(title_text, True, config.COLOR_HIGHLIGHT)
-        self.title_surface.blit(title, (10, 0))
+        title_text = f"// PURSUIT MATRIX  [{self.n_pred}x{self.n_evad}]  [ARROWS: SCROLL]"
+        title = config.font_small.render(title_text, True, config.COLOR_MUTED)
+        self.title_surface.blit(title, (4, 4))
 
     def _create_corner_surface(self):
         self.corner_surface = pygame.Surface((self.id_width, self.header_height), pygame.SRCALPHA)
-        self.corner_surface.fill((0, 0, 0, 200))
+        self.corner_surface.fill(config.COLOR_PANEL_BG)
 
-        corner_text = config.font_small.render("P \\ E", True, config.COLOR_TEXT)
+        corner_text = config.font_small.render("P \\ E", True, config.COLOR_MUTED)
         text_rect = corner_text.get_rect(center=(self.id_width // 2, self.header_height // 2))
         self.corner_surface.blit(corner_text, text_rect)
 
-        pygame.draw.line(self.corner_surface, config.COLOR_GRID_MINOR,
+        pygame.draw.line(self.corner_surface, config.COLOR_PANEL,
                          (0, self.header_height - 1),
                          (self.id_width, self.header_height - 1), 1)
-        pygame.draw.line(self.corner_surface, config.COLOR_GRID_MINOR,
+        pygame.draw.line(self.corner_surface, config.COLOR_PANEL,
                          (self.id_width - 1, 0),
                          (self.id_width - 1, self.header_height), 1)
 
     def _create_col_header_surface(self):
         width = self.n_evad * self.cell_width
         self.col_header_surface = pygame.Surface((width, self.header_height), pygame.SRCALPHA)
-        self.col_header_surface.fill((0, 0, 0, 200))
+        self.col_header_surface.fill(config.COLOR_PANEL_BG)
 
         for j in range(self.n_evad):
             evader = self.evaders[j]
             header_text = f"E-{evader.track_id}"
-            txt = config.font_small.render(header_text, True, config.COLOR_TEXT)
+            txt = config.font_small.render(header_text, True, config.COLOR_TARGET)
             text_rect = txt.get_rect(center=(j * self.cell_width + self.cell_width // 2, self.header_height // 2))
             self.col_header_surface.blit(txt, text_rect)
 
-        pygame.draw.line(self.col_header_surface, config.COLOR_GRID_MINOR,
+        pygame.draw.line(self.col_header_surface, config.COLOR_PANEL,
                          (0, self.header_height - 1),
                          (width, self.header_height - 1), 1)
 
         for j in range(1, self.n_evad):
             x = j * self.cell_width
-            pygame.draw.line(self.col_header_surface, config.COLOR_GRID_MINOR, (x, 0), (x, self.header_height), 1)
+            pygame.draw.line(self.col_header_surface, config.COLOR_PANEL, (x, 0), (x, self.header_height), 1)
 
     def _create_row_header_surface(self):
         height = self.n_pred * self.cell_height
         self.row_header_surface = pygame.Surface((self.id_width, height), pygame.SRCALPHA)
-        self.row_header_surface.fill((0, 0, 0, 200))
+        self.row_header_surface.fill(config.COLOR_PANEL_BG)
 
         for i in range(self.n_pred):
             predator = self.predators[i]
             header_text = f"P-{predator.track_id}"
-            txt = config.font_small.render(header_text, True, config.COLOR_TEXT)
+            txt = config.font_small.render(header_text, True, config.COLOR_FRIENDLY)
             text_rect = txt.get_rect(center=(self.id_width // 2, i * self.cell_height + self.cell_height // 2))
             self.row_header_surface.blit(txt, text_rect)
 
-        pygame.draw.line(self.row_header_surface, config.COLOR_GRID_MINOR,
+        pygame.draw.line(self.row_header_surface, config.COLOR_PANEL,
                          (self.id_width - 1, 0),
                          (self.id_width - 1, height), 1)
 
         for i in range(1, self.n_pred):
             y = i * self.cell_height
-            pygame.draw.line(self.row_header_surface, config.COLOR_GRID_MINOR, (0, y), (self.id_width, y), 1)
+            pygame.draw.line(self.row_header_surface, config.COLOR_PANEL, (0, y), (self.id_width, y), 1)
 
     def _create_full_body_surface(self):
         width = self.n_evad * self.cell_width
         height = self.n_pred * self.cell_height
 
         self.full_body_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.full_body_surface.fill((0, 0, 0, 180))
+        self.full_body_surface.fill(config.COLOR_PANEL_BG)
 
         for i in range(self.n_pred):
             for j in range(self.n_evad):
                 pursuit_time = self.cost_matrix[i][j]
-                time_text = "∞" if np.isinf(pursuit_time) else f"{pursuit_time:.3f}s"
+                is_inf = np.isinf(pursuit_time)
+                time_text = "∞" if is_inf else f"{pursuit_time:.3f}s"
 
                 predator = self.predators[i]
                 evader = self.evaders[j]
 
                 is_assigned = (evader in self.assignments and self.assignments[evader] == predator)
-                color = config.COLOR_HIGHLIGHT if is_assigned else config.COLOR_TEXT
+                if is_assigned:
+                    cell = pygame.Rect(j * self.cell_width + 1, i * self.cell_height + 1,
+                                       self.cell_width - 1, self.cell_height - 1)
+                    s = pygame.Surface((cell.width, cell.height), pygame.SRCALPHA)
+                    s.fill((*config.COLOR_ALERT, 40))
+                    self.full_body_surface.blit(s, (cell.x, cell.y))
+                    color = config.COLOR_ALERT
+                elif is_inf:
+                    color = config.COLOR_MUTED
+                else:
+                    color = config.COLOR_TEXT
 
                 txt = config.font_small.render(time_text, True, color)
                 text_rect = txt.get_rect(center=(j * self.cell_width + self.cell_width // 2,
@@ -172,17 +184,20 @@ class MatrixOverlay:
 
         for i in range(self.n_pred + 1):
             y = i * self.cell_height
-            pygame.draw.line(self.full_body_surface, config.COLOR_GRID_MINOR, (0, y), (width, y), 1)
+            pygame.draw.line(self.full_body_surface, config.COLOR_PANEL, (0, y), (width, y), 1)
         for j in range(self.n_evad + 1):
             x = j * self.cell_width
-            pygame.draw.line(self.full_body_surface, config.COLOR_GRID_MINOR, (x, 0), (x, height), 1)
+            pygame.draw.line(self.full_body_surface, config.COLOR_PANEL, (x, 0), (x, height), 1)
 
     def _update_overlay(self):
         self.overlay_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.overlay_surface.fill((0, 0, 0, 0))
 
         bg_rect = pygame.Rect(0, 20, self.width, self.height - 20)
-        pygame.draw.rect(self.overlay_surface, (0, 0, 0, 220), bg_rect)
+        bg = pygame.Surface((bg_rect.width, bg_rect.height), pygame.SRCALPHA)
+        bg.fill(config.COLOR_PANEL_BG)
+        self.overlay_surface.blit(bg, (bg_rect.x, bg_rect.y))
+        pygame.draw.rect(self.overlay_surface, config.COLOR_PANEL, bg_rect, 1)
 
         if self.title_surface:
             self.overlay_surface.blit(self.title_surface, (0, 0))
@@ -220,6 +235,9 @@ class MatrixOverlay:
 
         self._draw_scroll_indicators()
 
+        chrome.corner_brackets(self.overlay_surface, (0, 20, self.width - 1, self.height - 21),
+                               length=10, color=config.COLOR_BRACKET)
+
     def _draw_scroll_indicators(self):
         if not self.overlay_surface:
             return
@@ -231,14 +249,14 @@ class MatrixOverlay:
             bar_width = max(30, body_visible_width * (body_visible_width / self.full_body_surface.get_width()))
             bar_x = self.start_x + self.id_width + (self.scroll_x / self.max_scroll_x) * (
                         body_visible_width - bar_width)
-            pygame.draw.rect(self.overlay_surface, config.COLOR_GRID_MINOR,
+            pygame.draw.rect(self.overlay_surface, config.COLOR_BRACKET,
                              (bar_x, self.height - 5, bar_width, 3))
 
         if self.max_scroll_y > 0:
             bar_height = max(30, body_visible_height * (body_visible_height / self.full_body_surface.get_height()))
             bar_y = self.start_y + self.header_height + (self.scroll_y / self.max_scroll_y) * (
                         body_visible_height - bar_height)
-            pygame.draw.rect(self.overlay_surface, config.COLOR_GRID_MINOR,
+            pygame.draw.rect(self.overlay_surface, config.COLOR_BRACKET,
                              (self.width - 5, bar_y, 3, bar_height))
 
     def handle_event(self, event):

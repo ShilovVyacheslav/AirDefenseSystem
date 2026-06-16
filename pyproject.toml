@@ -5,7 +5,7 @@ requires-python = ">=3.11"
 dependencies = ["pygame", "numpy", "numba"]
 
 [project.scripts]
-killbox = "src.cli:run"
+ads = "src.cli:run"
 
 [build-system]
 requires = ["setuptools>=61"]
