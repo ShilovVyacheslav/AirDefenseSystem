@@ -1,10 +1,11 @@
 import math
 import random
+
 import pygame
 
 from src.domain.entities.entity import Entity
-from src.utils.coordinate_system import *
 from src.ui.entity import draw_evader
+from src.utils.coordinate_system import *
 
 
 class Evader(Entity):

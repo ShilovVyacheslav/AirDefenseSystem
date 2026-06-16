@@ -1,8 +1,8 @@
 import math
+from collections import deque
+from typing import List, Tuple, Optional
 
 import numpy as np
-from typing import List, Tuple, Optional
-from collections import deque
 from tqdm import tqdm
 
 

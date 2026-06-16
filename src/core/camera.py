@@ -1,12 +1,13 @@
-import src.config as config
+import pygame
 
+from src import config
 from src.utils.coordinate_system import screen_to_world
 
 
 class Camera:
     def __init__(self, screen_size, initial_scale=config.INITIAL_SCALE):
         self.scale = initial_scale
-        self.offset = config.pygame.Vector2(screen_size[0] / 2, screen_size[1] / 2)
+        self.offset = pygame.Vector2(screen_size[0] / 2, screen_size[1] / 2)
 
     def zoom_at(self, mouse_px, k):
         old_scale = self.scale

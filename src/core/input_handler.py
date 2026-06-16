@@ -1,9 +1,7 @@
 import pygame
 
 from src import config
-
 from src.core.modes import MODE_KEYS
-from src.ui.events import handle_event
 
 
 class InputHandler:
@@ -22,9 +20,7 @@ class InputHandler:
             if self.matrix_overlay.handle_event(event):
                 continue
 
-            running = handle_event(
-                event, self.camera, (config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
-            )
+            running = self._handle_event(event, (config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
 
             if event.type == pygame.KEYDOWN:
                 if not self._handle_key(event.key):
@@ -34,6 +30,15 @@ class InputHandler:
 
         self._update_drag()
         return running
+
+    def _handle_event(self, event, window_size):
+        if event.type == pygame.QUIT:
+            return False
+        elif event.type == pygame.MOUSEWHEEL:
+            self.camera.zoom_at(pygame.mouse.get_pos(), 1.1 ** event.y)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            self.camera.reset(window_size)
+        return True
 
     def _handle_key(self, key) -> bool:
 

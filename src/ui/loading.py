@@ -1,5 +1,7 @@
 import time
+
 import pygame
+
 import src.config as config
 
 

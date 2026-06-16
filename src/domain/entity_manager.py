@@ -1,14 +1,14 @@
-import numpy as np
+from typing import List, Dict
 
-from src.core import constants
+import numpy as np
+from tqdm import tqdm
+
 from src.compute.bottleneck_algorithm import bottleneck_algorithm
+from src.core import constants
 from src.domain.entities.evader import Evader
 from src.domain.entities.predator import Predator
 from src.domain.scenario_data import resolve_count, entity_blocks, block_at
 from src.domain.setups import ModeSetup, SpiralSetup, CircularSetup, TargetingSetup
-
-from typing import List, Dict
-from tqdm import tqdm
 
 
 class EntityManager:

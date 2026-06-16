@@ -1,12 +1,17 @@
 import math
+import pygame
 
-import src.config as config
-
+from src import config
 from src.utils.coordinate_system import screen_to_world
 
 
+def _mode_str(mode) -> str:
+    return mode.value if hasattr(mode, "value") else mode
+
+
 def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interception_time, clock, mode):
-    mouse = config.pygame.mouse.get_pos()
+    mode = _mode_str(mode)
+    mouse = pygame.mouse.get_pos()
     w = screen_to_world(mouse, scale, offset)
     info_left = [
         f"> SYSTEM STATUS: NOMINAL",
@@ -52,10 +57,10 @@ def draw_hud(screen, W, H, scale, offset, entity_manager, dt, timer, interceptio
     line_height = 18
     hud_height = 5 + len(info_bottom) * line_height + 15
     y = H - hud_height
-    bg_bottom = config.pygame.Surface((W, hud_height), config.pygame.SRCALPHA)
+    bg_bottom = pygame.Surface((W, hud_height), pygame.SRCALPHA)
     bg_bottom.fill(config.COLOR_HUD_BG)
     screen.blit(bg_bottom, (0, y))
     for i, line in enumerate(info_bottom):
         txt = config.font_small.render(line, True, config.COLOR_TEXT)
         screen.blit(txt, (10, y + 5 + i * line_height))
-    config.pygame.draw.rect(screen, config.COLOR_GRID_MAJOR, (0, 0, W, H), 2)
+    pygame.draw.rect(screen, config.COLOR_GRID_MAJOR, (0, 0, W, H), 2)

@@ -1,5 +1,6 @@
 import argparse
 from dataclasses import dataclass
+
 from src import loaders
 
 MODES = [

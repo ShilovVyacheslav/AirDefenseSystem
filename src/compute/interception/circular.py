@@ -1,7 +1,9 @@
 import math
+
 import numpy as np
 from numba import njit
 from scipy.special import ellipeinc
+
 from src.compute.ellipe.ellipe_lut import ellipe_lut
 from src.core.constants import STEP
 

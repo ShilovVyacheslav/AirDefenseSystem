@@ -1,5 +1,6 @@
 import math
 import random
+
 import pygame
 
 from src.ui.entity import draw, draw_trail

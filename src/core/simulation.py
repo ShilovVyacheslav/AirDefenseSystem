@@ -1,13 +1,12 @@
 import pygame
 
 from src import config
-
 from src import loaders
 from src.core.camera import Camera
-from src.domain.entity_manager import EntityManager
 from src.core.input_handler import InputHandler
 from src.core.modes import Mode, ModeRegistry
 from src.core.renderer import Renderer
+from src.domain.entity_manager import EntityManager
 from src.ui.loading import show_loading_screen
 from src.ui.matrix_overlay import MatrixOverlay
 
