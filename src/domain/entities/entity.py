@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-from src.ui.entity import draw, draw_trail
+from src.ui.render import draw, draw_trail
 from src.utils.random_init import get_random_set
 
 

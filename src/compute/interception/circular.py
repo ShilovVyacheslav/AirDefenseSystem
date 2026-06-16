@@ -1,6 +1,5 @@
 import math
 
-import numpy as np
 from numba import njit
 from scipy.special import ellipeinc
 
@@ -94,16 +93,3 @@ def _calc_circular_core(D_0, V_P, V_E, A_E, x_C_0, y_C_0, x_P_0, y_P_0):
 def calculate_enumeration_circular_time(predator, evader):
     return _calc_circular_core(evader.D_0, predator.speed, evader.V_E, evader.A_E,
                                evader.C_0.x, evader.C_0.y, predator.pos.x, predator.pos.y)
-
-
-def compute_trajectory(D_0, V_P, v_1, gamma, t_1, theta_max=None, h=0.01):
-    if theta_max is None:
-        theta_max = gamma + 2 * math.pi
-    n_steps = int((theta_max - gamma) / h)
-    theta = np.linspace(gamma, theta_max, n_steps)
-    m = (v_1 / V_P)**2
-    integral = V_P * (ellipeinc(math.pi / 2 - gamma, m) - ellipeinc(math.pi / 2 - theta, m))
-    t = t_1 + D_0 / (V_P**2 - v_1**2) * (v_1 * (math.cos(gamma) - np.cos(theta)) + integral)
-    x = D_0 * np.cos(theta) - v_1 * t
-    y = D_0 * np.sin(theta)
-    return t, x, y

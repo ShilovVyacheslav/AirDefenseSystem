@@ -1,12 +1,9 @@
-import math
-
 import pygame
-from scipy.special import ellipeinc
 
-from src.compute.interception.circular import compute_trajectory
+from src.compute.interception.trajectory import compute_full_trajectory
 from src.config import COLOR_FRIENDLY, PREDATOR_RADIUS_WORLD
 from src.domain.entities.entity import Entity
-from src.ui.entity import draw_predator
+from src.ui.render import draw_predator
 
 
 class Predator(Entity):
@@ -57,67 +54,4 @@ class Predator(Entity):
                 self.assumed_speed == evader.speed)
 
     def precompute_trajectory(self):
-        m = len(self.V_E)
-        k = len(self.A_E)
-        total = m * k
-
-        V_P = self.speed
-        D_0 = self.D_0
-        x_C_0, y_C_0 = self.C_0.x, self.C_0.y
-
-        x_C_prev, y_C_prev = x_C_0, y_C_0
-        x_P_prev, y_P_prev = self.pos.x, self.pos.y
-        t_2pi, t_2pi_prev, t_2pi_prev_prev = 0.0, 0.0, 0.0
-        gamma = 0.0
-
-        self.all_t_checkpoints = []
-        self.all_x_checkpoints = []
-        self.all_y_checkpoints = []
-
-        for s in range(1, total + 1):
-            i = (s + m - 1) // m
-            j = s - (i - 1) * m
-            alpha_i = self.A_E[i - 1]
-            v_j = self.V_E[j - 1]
-
-            x_C = x_C_0 + v_j * t_2pi_prev * math.cos(alpha_i)
-            y_C = y_C_0 + v_j * t_2pi_prev * math.sin(alpha_i)
-
-            if s > 1:
-                i_prev = (s - 1 + m - 1) // m
-                j_prev = (s - 1) - (i_prev - 1) * m
-                x_P = x_C_prev + D_0 * math.cos(gamma) + self.V_E[j_prev - 1] * (t_2pi_prev - t_2pi_prev_prev) * math.cos(
-                    self.A_E[i_prev - 1])
-                y_P = y_C_prev + D_0 * math.sin(gamma) + self.V_E[j_prev - 1] * (t_2pi_prev - t_2pi_prev_prev) * math.sin(
-                    self.A_E[i_prev - 1])
-            else:
-                x_P = x_P_prev
-                y_P = y_P_prev
-
-            N = D_0 ** 2 - (x_C - x_P) ** 2 - (y_C - y_P) ** 2
-            if D_0 <= math.sqrt((x_C - x_P) ** 2 + (y_C - y_P) ** 2):
-                M_1 = (x_C - x_P) * v_j * math.cos(alpha_i) + (y_C - y_P) * v_j * math.sin(alpha_i) - V_P * D_0
-                t_1 = (M_1 + math.sqrt(M_1 ** 2 - (V_P ** 2 - v_j ** 2) * N)) / (V_P ** 2 - v_j ** 2)
-            else:
-                M_2 = (x_C - x_P) * v_j * math.cos(alpha_i) + (y_C - y_P) * v_j * math.sin(alpha_i) + V_P * D_0
-                t_1 = (M_2 - math.sqrt(M_2 ** 2 - (V_P ** 2 - v_j ** 2) * N)) / (V_P ** 2 - v_j ** 2)
-
-            gamma = math.atan2(y_P - y_C - v_j * t_1 * math.sin(alpha_i), x_P - x_C - v_j * t_1 * math.cos(alpha_i))
-
-            t_checkpoints, x, y = compute_trajectory(D_0, V_P, v_j, gamma + math.pi - alpha_i, t_1,
-                                                     theta_max=gamma + math.pi - alpha_i + 2 * math.pi, h=0.01)
-            x_checkpoints = x_C - x * math.cos(alpha_i) + y * math.sin(alpha_i)
-            y_checkpoints = y_C - x * math.sin(alpha_i) - y * math.cos(alpha_i)
-
-            self.all_t_checkpoints.append(t_checkpoints)
-            self.all_x_checkpoints.append(x_checkpoints)
-            self.all_y_checkpoints.append(y_checkpoints)
-
-            t_2pi = t_2pi_prev + t_1 + 4 * D_0 * V_P * ellipeinc(math.pi / 2, (v_j / V_P)**2) / (V_P ** 2 - v_j ** 2)
-            t_2pi_prev_prev = t_2pi_prev
-            t_2pi_prev = t_2pi
-
-            x_C_prev = x_C
-            y_C_prev = y_C
-            x_P_prev = x_P
-            y_P_prev = y_P
+        compute_full_trajectory(self)

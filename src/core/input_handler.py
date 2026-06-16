@@ -50,8 +50,6 @@ class InputHandler:
             self.simulation.reset_entities(use_data=True)
         elif key == pygame.K_ESCAPE:
             return False
-        elif key == pygame.K_TAB:
-            config.cycle_style()
         elif key == pygame.K_m:
             self.matrix_overlay.toggle()
         elif key == pygame.K_z and self.matrix_overlay.visible:
