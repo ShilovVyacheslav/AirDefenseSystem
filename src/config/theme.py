@@ -1,6 +1,5 @@
 STYLE = "shadow"
 
-
 STYLES = {
     "gadci": {
         "NAME": "G.A.D.C.I. PROTOCOL",
@@ -17,6 +16,12 @@ STYLES = {
             "PREDATOR": (0, 150, 100),
             "HUD_BG": (0, 30, 0, 180),
             "STATS_BG": (0, 0, 0, 150),
+            "PANEL": (0, 40, 0),
+            "PANEL_BG": (0, 20, 0, 200),
+            "BRACKET": (0, 200, 255),
+            "MUTED": (0, 120, 80),
+            "ALERT_DIM": (0, 90, 60),
+            "SCAN": (0, 255, 150, 18),
         },
     },
     "shadow": {
@@ -36,6 +41,12 @@ STYLES = {
             "STATS_BG": (6, 8, 12, 170),
             "ALERT_DIM": (168, 40, 44),
             "TEXT_MUTED": (96, 102, 110),
+
+            "PANEL": (40, 46, 56),
+            "PANEL_BG": (8, 11, 16, 205),
+            "BRACKET": (120, 128, 138),
+            "MUTED": (96, 102, 110),
+            "SCAN": (60, 66, 76, 16),
         },
     },
 }
@@ -67,3 +78,10 @@ COLOR_TARGET = _colors["TARGET"]
 COLOR_PREDATOR = _colors["PREDATOR"]
 COLOR_HUD_BG = _colors["HUD_BG"]
 COLOR_STATS_BG = _colors["STATS_BG"]
+
+COLOR_PANEL = _colors.get("PANEL", COLOR_GRID_MAJOR)
+COLOR_PANEL_BG = _colors.get("PANEL_BG", COLOR_HUD_BG)
+COLOR_BRACKET = _colors.get("BRACKET", COLOR_AXIS)
+COLOR_MUTED = _colors.get("MUTED", _colors.get("TEXT_MUTED", COLOR_AXIS))
+COLOR_ALERT_DIM = _colors.get("ALERT_DIM", COLOR_ALERT)
+COLOR_SCAN = _colors.get("SCAN", (255, 255, 255, 12))

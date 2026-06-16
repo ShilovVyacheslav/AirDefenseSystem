@@ -1,6 +1,7 @@
 import pygame
 
 from src import config
+from src.ui import chrome
 from src.utils.coordinate_system import world_to_screen
 
 
@@ -35,22 +36,34 @@ def draw_trail(entity, screen, scale, offset):
                     t += dash_length + gap_length
 
 
+def _tag(screen, pos, text, color):
+    txt = config.font_small.render(text, True, color)
+    screen.blit(txt, (pos[0], pos[1] - txt.get_height() / 2))
+
+
 def draw_predator(predator, screen, scale, offset):
     draw(predator, screen, scale, offset)
-    p_screen = world_to_screen(predator.pos, scale, offset)
-    r_px = max(3, int(predator.radius_world * scale))
-    pygame.draw.circle(screen, predator.color, (int(p_screen.x), int(p_screen.y)), r_px, 1)
-    pygame.draw.circle(screen, predator.color, (int(p_screen.x), int(p_screen.y)), 1)
-    status_text = config.font_small.render(f"P-{predator.track_id}", True, predator.color)
-    screen.blit(status_text, (p_screen.x + r_px + 2, p_screen.y - status_text.get_height() / 2))
+    p = world_to_screen(predator.pos, scale, offset)
+    cx, cy = int(p.x), int(p.y)
+    r_px = max(5, int(predator.radius_world * scale))
+    color = config.COLOR_FRIENDLY
+
+    chrome.crosshair(screen, (cx, cy), size=r_px + 4, color=color, gap=3)
+    chrome.corner_brackets(screen, (cx - r_px, cy - r_px, r_px * 2, r_px * 2),
+                           length=4, color=color)
+    pygame.draw.circle(screen, color, (cx, cy), 1)
+    _tag(screen, (cx + r_px + 6, cy), f"P-{predator.track_id}", color)
 
 
 def draw_evader(evader, screen, scale, offset):
     draw(evader, screen, scale, offset)
-    p_screen = world_to_screen(evader.pos, scale, offset)
-    r_px = max(3, int(evader.radius_world * scale))
-    square_size = r_px * 1.4
-    pygame.draw.rect(screen, evader.color, (p_screen.x - square_size / 2, p_screen.y - square_size / 2,
-                                            square_size, square_size), 2)
-    id_text = config.font_small.render(f"E-{evader.track_id}", True, evader.color)
-    screen.blit(id_text, (p_screen.x + square_size + 2, p_screen.y - id_text.get_height() / 2))
+    p = world_to_screen(evader.pos, scale, offset)
+    cx, cy = int(p.x), int(p.y)
+    r_px = max(5, int(evader.radius_world * scale))
+    color = config.COLOR_TARGET
+
+    d = r_px
+    pygame.draw.polygon(screen, color,
+                        [(cx, cy - d), (cx + d, cy), (cx, cy + d), (cx - d, cy)], 1)
+    chrome.lock_brackets(screen, (cx, cy), half=r_px + 4, color=color, corner=4)
+    _tag(screen, (cx + r_px + 8, cy), f"E-{evader.track_id}", color)

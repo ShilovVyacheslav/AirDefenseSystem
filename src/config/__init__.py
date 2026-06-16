@@ -28,6 +28,12 @@ from src.config.theme import (
     COLOR_PREDATOR,
     COLOR_HUD_BG,
     COLOR_STATS_BG,
+    COLOR_PANEL,
+    COLOR_PANEL_BG,
+    COLOR_BRACKET,
+    COLOR_MUTED,
+    COLOR_ALERT_DIM,
+    COLOR_SCAN,
 )
 
 from src.config.fonts import (
