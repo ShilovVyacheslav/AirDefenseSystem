@@ -1,7 +1,6 @@
 from typing import List, Dict
 
 import numpy as np
-from tqdm import tqdm
 
 from src.compute.bottleneck_algorithm import bottleneck_algorithm
 from src.config import SPIRAL_COUNT, CIRCULAR_COUNT, TARGETING_COUNT
@@ -72,14 +71,10 @@ class EntityManager:
     def apply_bottleneck_assignment(self, count: int, calculate_interception_time):
         self.assignments.clear()
         cost_matrix = np.zeros((count, count), dtype=np.float64)
-        total_ops = count * count
-        pbar = tqdm(total=total_ops, desc="Building cost matrix", unit="pair")
         for i, predator in enumerate(self.predators):
             for j, evader in enumerate(self.evaders):
                 interception_time = calculate_interception_time(predator, evader)
                 cost_matrix[i, j] = interception_time if interception_time != float('inf') else np.inf
-                pbar.update(1)
-        pbar.close()
         assignment = bottleneck_algorithm(cost_matrix)
         max_time = 0.0
         for predator_idx, evader_idx in assignment:

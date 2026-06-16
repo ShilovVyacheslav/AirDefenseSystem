@@ -22,6 +22,9 @@ class Simulation:
 
         self.respawn = app_config.respawn
         self.provide_matrix = app_config.matrix
+        self.show_preview = app_config.preview
+        self.use_data = not app_config.random
+        self.count_override = app_config.count
         self.mode = Mode(app_config.mode)
 
         self.scenario_data = None
@@ -44,7 +47,7 @@ class Simulation:
     def initialize(self) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((config.WINDOW_WIDTH, config.WINDOW_HEIGHT), pygame.NOFRAME)
-        pygame.display.set_caption('G.A.D.C.I. // Global Air Defense Command Interface')
+        pygame.display.set_caption('A.D.S. Interface')
         self.clock = pygame.time.Clock()
 
         icon = pygame.image.load("src/assets/icons/app_icon.png")
@@ -57,11 +60,13 @@ class Simulation:
 
         self.reset_entities()
 
-    def reset_entities(self, mode: Mode = None, use_data: bool = True) -> None:
+    def reset_entities(self, mode: Mode = None, use_data: bool = None) -> None:
         if mode is None:
             mode = self.mode
+        if use_data is None:
+            use_data = self.use_data
         override = self.scenario_data if (mode == self.scenario_mode) else None
-        self.interception_time = self.mode_registry.initialize(mode, use_data, override)
+        self.interception_time = self.mode_registry.initialize(mode, use_data, override, count=self.count_override)
         self.timer = 0.0
         if self.provide_matrix and mode.is_multiple:
             self.matrix_overlay.reset(self.entity_manager)
@@ -76,7 +81,8 @@ class Simulation:
 
     def run(self) -> None:
         self.initialize()
-        show_loading_screen(self.screen)
+        if self.show_preview:
+            show_loading_screen(self.screen)
         self.running = True
         while self.running:
             dt = min(self.clock.tick(config.FPS) / 1000.0, 0.016)

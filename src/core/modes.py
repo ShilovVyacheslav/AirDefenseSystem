@@ -41,7 +41,7 @@ class ModeRegistry:
             Mode.MULTIPLE_TARGETING: entity_manager.initialize_multiple_targeting_mode,
         }
 
-    def initialize(self, mode: Mode, use_data: bool, override_data=None) -> float:
+    def initialize(self, mode: Mode, use_data: bool, override_data=None, count=None) -> float:
         if not use_data:
             data = None
         elif override_data is not None:
@@ -49,4 +49,8 @@ class ModeRegistry:
         else:
             scenario = mode.value.split("_", 1)[1]
             data = loaders.load_default(scenario)
-        return self._table[mode](data)
+
+        initializer = self._table[mode]
+        if count is not None and mode.is_multiple:
+            return initializer(data, count)
+        return initializer(data)
