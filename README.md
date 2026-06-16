@@ -1,7 +1,7 @@
 # 🚀 **Air Defense System**  
 
 <p align="center">
-  <img src="src/assets/icons/app_icon.png" width="200" alt="Air Defense System Icon">
+  <img src="src/assets/icons/radar_icon.png" width="200" alt="Air Defense System Icon">
   <br>
   <em>Advanced Threat Detection & Interception Simulation</em>
 </p>
