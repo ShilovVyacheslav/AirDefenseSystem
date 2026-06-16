@@ -59,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     source.add_argument(
         "-r", "--random", action="store_true",
-        help="Procedural random world (ignores default scenario data).",
+        help="Procedural random setup. Not allowed with --scenario.",
     )
 
     mode_help_lines = []
@@ -74,7 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "-c", "--count", type=int, default=None, metavar="N",
-        help="Entity count for 'multiple' modes. Not allowed with --scenario.",
+        help="Entity count for 'multiple' modes.",
     )
 
     parser.add_argument(
