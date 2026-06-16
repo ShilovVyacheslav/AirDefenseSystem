@@ -5,8 +5,20 @@ from src import loaders
 from src.core.modes import Mode
 
 MODES = [m.value for m in Mode]
+MODE_CHOICES = MODES + [str(i) for i in range(1, len(MODES) + 1)]
 
 DEFAULT_MODE = Mode.SINGLE_SPIRAL.value
+
+
+def _parse_mode(value: str) -> str:
+    if value.isdigit():
+        idx = int(value) - 1
+        if 0 <= idx < len(MODES):
+            return MODES[idx]
+        raise argparse.ArgumentTypeError(f"Invalid mode index: {value}. Must be 1-{len(MODES)}")
+    if value not in MODES:
+        raise argparse.ArgumentTypeError(f"Invalid mode: {value}. Available: {', '.join(MODES)}")
+    return value
 
 
 @dataclass(frozen=True)
@@ -50,9 +62,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Procedural random world (ignores default scenario data).",
     )
 
+    mode_help_lines = []
+    for i, mode in enumerate(MODES, 1):
+        mode_help_lines.append(f"  {i}: {mode}")
+    mode_help = "Simulation mode. Can be specified as name or number (1-6):\n" + "\n".join(mode_help_lines)
+    mode_help += f"\n(default: {DEFAULT_MODE})"
+
     parser.add_argument(
-        "-m", "--mode", choices=MODES, default=None, metavar="MODE",
-        help=f"Simulation mode (default: {DEFAULT_MODE}). Not allowed with --scenario.",
+        "-m", "--mode", type=_parse_mode, choices=MODE_CHOICES, default=None, metavar="MODE",
+        help=mode_help,
     )
     parser.add_argument(
         "-c", "--count", type=int, default=None, metavar="N",
