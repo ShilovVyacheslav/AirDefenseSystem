@@ -1,3 +1,4 @@
+import os
 import pygame
 
 from src import config
@@ -50,7 +51,8 @@ class Simulation:
         pygame.display.set_caption('A.D.S. Interface')
         self.clock = pygame.time.Clock()
 
-        icon = pygame.image.load("src/assets/icons/radar_icon.png")
+        icon_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'icons', 'radar_icon.png')
+        icon = pygame.image.load(icon_path)
         pygame.display.set_icon(icon)
         pygame.event.pump()
 
