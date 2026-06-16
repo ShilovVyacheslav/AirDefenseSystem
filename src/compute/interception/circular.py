@@ -5,7 +5,7 @@ from numba import njit
 from scipy.special import ellipeinc
 
 from src.compute.ellipe.ellipe_lut import ellipe_lut
-from src.core.constants import STEP
+from src.config import STEP
 
 
 def calculate_circular_touchdown_time(P, C, D_0, V_P, v_1, alpha_1):

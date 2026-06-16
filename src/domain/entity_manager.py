@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 
 from src.compute.bottleneck_algorithm import bottleneck_algorithm
-from src.core import constants
+from src.config import SPIRAL_COUNT, CIRCULAR_COUNT, TARGETING_COUNT
 from src.domain.entities.evader import Evader
 from src.domain.entities.predator import Predator
 from src.domain.scenario_data import resolve_count, entity_blocks, block_at
@@ -54,19 +54,19 @@ class EntityManager:
     def initialize_single_spiral_mode(self, data=None):
         return self.__build(SpiralSetup, data)
 
-    def initialize_multiple_spiral_mode(self, data=None, count=constants.SPIRAL_COUNT):
+    def initialize_multiple_spiral_mode(self, data=None, count=SPIRAL_COUNT):
         return self.__build(SpiralSetup, data, count)
 
     def initialize_single_circular_mode(self, data=None):
         return self.__build(CircularSetup, data)
 
-    def initialize_multiple_circular_mode(self, data=None, count=constants.CIRCULAR_COUNT):
+    def initialize_multiple_circular_mode(self, data=None, count=CIRCULAR_COUNT):
         return self.__build(CircularSetup, data, count)
 
     def initialize_single_targeting_mode(self, data=None):
         return self.__build(TargetingSetup, data)
 
-    def initialize_multiple_targeting_mode(self, data=None, count=constants.TARGETING_COUNT):
+    def initialize_multiple_targeting_mode(self, data=None, count=TARGETING_COUNT):
         return self.__build(TargetingSetup, data, count)
 
     def apply_bottleneck_assignment(self, count: int, calculate_interception_time):

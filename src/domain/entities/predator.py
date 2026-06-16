@@ -3,16 +3,16 @@ import math
 import pygame
 from scipy.special import ellipeinc
 
-from src import config
 from src.compute.interception.circular import compute_trajectory
+from src.config import COLOR_FRIENDLY, PREDATOR_RADIUS_WORLD
 from src.domain.entities.entity import Entity
 from src.ui.entity import draw_predator
 
 
 class Predator(Entity):
     def __init__(self, pos, speed=None, behavior=None, track_id=None):
-        super().__init__(pos, speed, radius_world=config.PREDATOR_RADIUS_WORLD,
-                         color=config.COLOR_FRIENDLY, behavior=behavior, track_id=track_id)
+        super().__init__(pos, speed, radius_world=PREDATOR_RADIUS_WORLD,
+                         color=COLOR_FRIENDLY, behavior=behavior, track_id=track_id)
         self.stage = "free"
         self.interception_time = 0.0
         self.k = 0

@@ -4,7 +4,7 @@ import numpy as np
 from scipy.special import ellipeinc
 from tqdm import tqdm
 
-from src.core.constants import STEP
+from src.config import STEP
 
 _LUT_PATH = os.path.join(os.path.dirname(__file__), 'ellipe_lut.npy')
 ellipe_lut = np.load(_LUT_PATH)
