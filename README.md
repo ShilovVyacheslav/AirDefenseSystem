@@ -1,13 +1,12 @@
-<div align="center">
-
-```
+<div style="text-align: center;">
+  <pre style="color: #cc0000; display: inline-block; text-align: left;">
  █████╗    ██████╗    ███████╗
 ██╔══██╗   ██╔══██╗   ██╔════╝
 ███████║   ██║  ██║   ███████╗
 ██╔══██║   ██║  ██║   ╚════██║
 ██║  ██║██╗██████╔╝██╗███████║██╗
 ╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝╚══════╝╚═╝
-```
+  </pre>
 
 # AIR DEFENSE SYSTEM
 
@@ -17,7 +16,6 @@
 ![Numba](https://img.shields.io/badge/JIT-Numba-orange?style=flat-square)
 ![Pygame](https://img.shields.io/badge/render-pygame-green?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-red?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)
 
 *Real-time simulation of guaranteed-capture pursuit strategies, built on*
 *closed-form analytical models of optimal interception under uncertainty.*
@@ -28,15 +26,12 @@
 
 ## ▏OVERVIEW
 
-A.D.S. simulates how a swarm of interceptors hunts down a swarm of evading drones
+**A.D.S.** simulates how a swarm of interceptors hunts down a swarm of evading drones
 when the targets' parameters are only partially known. Each interceptor must
 **guarantee** capture despite uncertainty about a target's speed, heading, or
 starting position — and the system assigns interceptors to targets so that the
-**slowest interception in the whole operation is as fast as possible** (a
-minimax / bottleneck objective).
-
-The simulator is the runnable counterpart to a thesis on optimal pursuit:
-every trajectory on screen follows a closed-form solution, not an approximation.
+**slowest interception in the whole operation is as fast as possible** (bottleneck 
+assignment problem).
 
 ---
 
@@ -82,21 +77,12 @@ The classic pursuit curve — closed-form trajectory and time-to-capture.
 
 ## ▏MULTI-TARGET ASSIGNMENT
 
-> *n* interceptors, *n* targets. **Which hunts which?**
+> **n** interceptors, **n** targets. **Which hunts which?**
 
 A.D.S. solves the **bottleneck assignment problem** — minimize the maximum
-interception time across all pairs:
-
-```
-  minimize  ( max  interception_time(Pᵢ → E_σ(i)) )
-     σ        i
-```
-
-It binary-searches the threshold `λ`, builds a bipartite graph of pairs reachable
-within `λ`, and tests for a **perfect matching** via **Hopcroft–Karp** `O(|E|·√V)`.
-The smallest feasible `λ` is optimal. Total: **`O(n^2.5 · log n)`**.
-
-The complete pairwise cost matrix is inspectable in-sim — press `M`.
+interception time across all pairs. It binary-searches a threshold, builds 
+a bipartite graph of pairs reachable within the threshold, and tests for a 
+**perfect matching** via **Hopcroft–Karp**.
 
 ---
 
