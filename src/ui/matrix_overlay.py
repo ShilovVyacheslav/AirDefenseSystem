@@ -74,8 +74,8 @@ class MatrixOverlay:
         self.max_scroll_x = max(0, body_width - (self.width - self.id_width - self.start_x))
         self.max_scroll_y = max(0, body_height - (self.height - self.header_height - self.start_y))
 
-        self.max_scroll_x = (self.max_scroll_x // self.cell_width) * self.cell_width
-        self.max_scroll_y = (self.max_scroll_y // self.cell_height) * self.cell_height
+        self.max_scroll_x = -(-self.max_scroll_x // self.cell_width) * self.cell_width
+        self.max_scroll_y = -(-self.max_scroll_y // self.cell_height) * self.cell_height
 
         self.scroll_x = 0
         self.scroll_y = 0
