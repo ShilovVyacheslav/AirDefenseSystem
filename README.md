@@ -1,12 +1,22 @@
 <div align="center">
-<pre style="color: #cc0000;">
+  <table>
+    <tr>
+      <td>
+<pre style="color: #cc0000; margin: 0;">
  █████╗    ██████╗    ███████╗
 ██╔══██╗   ██╔══██╗   ██╔════╝
 ███████║   ██║  ██║   ███████╗
 ██╔══██║   ██║  ██║   ╚════██║
-   ██║  ██║██╗██████╔╝██╗███████║██╗
-   ╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝╚══════╝╚═╝
+██║  ██║██╗██████╔╝██╗███████║██╗
+╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝╚══════╝╚═╝
 </pre>
+      </td>
+      <td><img src="src/assets/icons/radar_icon.png" width="180" alt="Air Defense System Icon"></td>
+    </tr>
+  </table>
+</div>
+
+<div align="center">
 
 # AIR DEFENSE SYSTEM
 
