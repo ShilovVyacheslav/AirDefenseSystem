@@ -77,7 +77,7 @@ The classic pursuit curve — closed-form trajectory and time-to-capture.
 
 ## ▏MULTI-TARGET ASSIGNMENT
 
-> **n** interceptors, **n** targets. **Which hunts which?**
+> **n** interceptors, **n** targets. Which hunts which?
 
 A.D.S. solves the **bottleneck assignment problem** — minimize the maximum
 interception time across all pairs. It binary-searches a threshold, builds 
@@ -177,8 +177,8 @@ ads -m multiple_targeting -r -c 30 --respawn
 src/
   cli.py          ▏ command-line interface, argument validation
   compute/        ▏ pursuit mathematics
-    interception/ ▏   spiral, circular, targeting solvers
-    ellipe/       ▏   elliptic-integral LUT + numba kernels
+    interception/ ▏ spiral, circular, targeting solvers
+    ellipe/       ▏ elliptic-integral LUT + numba kernels
   domain/         ▏ entities, motion, assignment, setups
   loaders/        ▏ scenario parsing + schema validation
   ui/             ▏ tactical HUD, grid, overlays, boot
@@ -191,7 +191,14 @@ scenarios/        ▏ default + example setups
 
 ## ▏FOUNDATION
 
-Implements the models from the undergraduate thesis *"On methods of optimal
+Implements the models from the undergraduate thesis *"On the methods of optimal
 pursuit of unmanned aerial vehicles"* (Applied Mathematics & Computer Science),
 which derives the analytical trajectories, interception times, and the bottleneck
 assignment algorithm. This project makes that mathematics interactive.
+
+## ▏LICENSE
+
+All rights reserved. This code is proprietary and confidential.
+
+You may view this repository for reference only.
+No copying, distribution, or modification is permitted without explicit written permission.
