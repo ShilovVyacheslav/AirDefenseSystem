@@ -31,7 +31,7 @@ def _draw_frame(screen, mono, mono_big, lines_done, current_text,
     screen.fill(config.COLOR_BG)
     chrome.corner_brackets(screen, (40, 30, W - 80, H - 60), length=26, color=config.COLOR_PANEL, width=1)
     strip = config.font_small.render(
-        "// CLASSIFIED — PROPERTY OF SHADOW COMPANY — UNAUTHORIZED ACCESS PROHIBITED",
+        "// CLASSIFIED — YOU HAVE BEEN LOGGED — UNAUTHORIZED ACCESS PROHIBITED",
         True, config.COLOR_MUTED)
     screen.blit(strip, (W // 2 - strip.get_width() // 2, 44))
     ty = 120

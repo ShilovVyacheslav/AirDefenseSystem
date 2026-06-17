@@ -96,12 +96,12 @@ def _telemetry_panel(screen, W, mode, em):
 
 
 def _controls_panel(screen, H):
-    pw, ph = 450, 90
+    pw, ph = 480, 90
     px, py = 14, H - ph - 32
     chrome.panel(screen, (px, py, pw, ph), label="COMMAND INPUT")
     rows = [
         "[1-2] SPIRAL   [3-4] CIRCULAR   [5-6] TARGETING",
-        "[RMB] PAN   [SCROLL] ZOOM   [SPACE] RECENTER",
+        "[RMB] PAN   [SCROLL] ZOOM   [SPACE] RECENTER   [ESC] QUIT",
         "[M] THREAT MATRIX   [R] RANDOMIZE   [I] LOAD SCENARIO",
     ]
     ly = py + 26
