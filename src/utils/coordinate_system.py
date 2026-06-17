@@ -1,4 +1,6 @@
-from src.config import *
+import pygame
+
+from src.config import WINDOW_HEIGHT
 
 
 def world_to_screen(p, scale, offset):

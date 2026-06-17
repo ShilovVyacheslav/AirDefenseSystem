@@ -1,0 +1,24 @@
+[project]
+name = "air-defense-system"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "colorama==0.4.6",
+    "llvmlite==0.47.0",
+    "numba==0.65.1",
+    "numpy==2.4.6",
+    "pygame==2.6.1",
+    "PyYAML==6.0.3",
+    "scipy==1.17.1",
+    "tqdm==4.68.2",
+]
+
+[project.scripts]
+ads = "src.cli:run"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["src*"]

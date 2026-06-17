@@ -1,9 +1,11 @@
-from src.config import *
-from src.core.coordinate_system import screen_to_world
+import pygame
+
+from src import config
+from src.utils.coordinate_system import screen_to_world
 
 
 class Camera:
-    def __init__(self, screen_size, initial_scale=INITIAL_SCALE):
+    def __init__(self, screen_size, initial_scale=config.INITIAL_SCALE):
         self.scale = initial_scale
         self.offset = pygame.Vector2(screen_size[0] / 2, screen_size[1] / 2)
 
@@ -18,5 +20,5 @@ class Camera:
         self.scale = new_scale
 
     def reset(self, screen_size):
-        self.scale = INITIAL_SCALE
+        self.scale = config.INITIAL_SCALE
         self.offset.update(screen_size[0] / 2, screen_size[1] / 2)
