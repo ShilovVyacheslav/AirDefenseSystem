@@ -1,12 +1,12 @@
-<div style="text-align: center;">
-  <pre style="color: #cc0000; display: inline-block; text-align: left;">
+<div align="center">
+<pre style="color: #cc0000;">
  █████╗    ██████╗    ███████╗
 ██╔══██╗   ██╔══██╗   ██╔════╝
 ███████║   ██║  ██║   ███████╗
 ██╔══██║   ██║  ██║   ╚════██║
-██║  ██║██╗██████╔╝██╗███████║██╗
-╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝╚══════╝╚═╝
-  </pre>
+   ██║  ██║██╗██████╔╝██╗███████║██╗
+   ╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝╚══════╝╚═╝
+</pre>
 
 # AIR DEFENSE SYSTEM
 
@@ -86,22 +86,6 @@ a bipartite graph of pairs reachable within the threshold, and tests for a
 
 ---
 
-## ▏WHAT MAKES IT DIFFERENT
-
-```
-  ▸ ANALYTICAL      positions from closed-form solutions, not numerical
-                    integration — zero accumulating drift
-  ▸ GUARANTEED      strategies are provably complete: every admissible
-                    target is caught, not merely chased
-  ▸ OPTIMAL         true minimax bottleneck assignment, not greedy heuristics
-  ▸ FAST            elliptic-integral hot path JIT-compiled with Numba,
-                    backed by a precomputed lookup table
-  ▸ LAYERED         pursuit math isolated from rendering and I/O across
-                    compute / domain / ui / loaders
-```
-
----
-
 ## ▏INSTALL
 
 > **Requires Python 3.11+**
@@ -135,7 +119,7 @@ a bipartite graph of pairs reachable within the threshold, and tests for a
     pip install -e .
     ``` 
     
-5.  **Run the simulation**
+5.  **Run**
     ```bash
     ads --help
     ``` 
@@ -145,12 +129,23 @@ a bipartite graph of pairs reachable within the threshold, and tests for a
 ## ▏DEPLOY
 
 ```bash
-ads                                          # single spiral pursuit
-ads -m multiple_circular -r -c 50            # 50-on-50 elliptic scan + matrix
-ads -m multiple_spiral -r -c 100 --no-preview # 100-craft swarm, skip intro
-ads -s scenarios/demo.yaml                   # hand-authored scenario
-ads -m multiple_targeting -r -c 30 --respawn # endless waves
-ads --scenario-info                          # scenario format reference
+# Default spiral pursuit from scenarios/spiral.yaml
+ads --mode=multiple_spiral
+
+# Swarm engagement: 100 spiral interceptors vs 100 targets, random setup
+ads -m multiple_spiral -r -c 100
+
+# Hardest model — circular scan with the threat matrix overlay, no intro
+ads -m multiple_circular -r -c 50 --no-preview
+
+# Scenario format reference
+ads --scenario-info
+
+# Circular scan from a hand-authored scenario file
+ads -s scenarios/circular.yaml
+
+# Continuous operation — auto-respawn waves after every wipe
+ads -m multiple_targeting -r -c 30 --respawn
 ```
 
 <details>
@@ -158,58 +153,19 @@ ads --scenario-info                          # scenario format reference
 
 <br>
 
-| Flag | Description |
-|------|-------------|
-| `-m, --mode MODE` | `single`/`multiple` × `spiral`/`circular`/`targeting` |
-| `-r, --random` | Procedural random world |
-| `-c, --count N` | Entity count for `multiple` modes |
-| `-s, --scenario PATH` | Load world from a `.yaml`/`.json` file |
-| `--respawn` | Auto-respawn a wave after every wipe |
-| `--no-matrix` | Disable the pursuit-matrix overlay |
-| `--no-preview` | Skip the boot sequence |
-| `--scenario-info` | Print scenario format reference and exit |
-| `-h, --help` | Usage and exit |
+| Flag | Description                                             |
+|------|---------------------------------------------------------|
+| `-m, --mode MODE` | `single_`/`multiple_` × `spiral`/`circular`/`targeting` |
+| `-r, --random` | Procedural random setup                                 |
+| `-c, --count N` | Entity count for `multiple` modes                       |
+| `-s, --scenario PATH` | Load setup from a `.yaml`/`.json` file                  |
+| `--respawn` | Auto-respawn entities after all interceptions             |
+| `--no-matrix` | Disable the pursuit-matrix overlay                      |
+| `--no-preview` | Skip the boot/loading intro                                  |
+| `--scenario-info` | Print scenario format reference and exit                |
+| `-h, --help` | Usage and exit                                          |
 
-**World source is exclusive** — `--scenario` *or* `--random` *or* neither (loads
-the mode default). `--mode` / `--count` / `--random` cannot combine with
-`--scenario`: the file owns the mode and count.
-
-</details>
-
-<details>
-<summary><b>In-sim controls</b></summary>
-
-<br>
-
-| Input | Action |
-|-------|--------|
-| `1`–`6` | Switch interception mode |
-| `M` | Toggle pursuit-matrix overlay |
-| `Arrows` | Scroll the matrix |
-| `RMB` drag · `Scroll` · `Space` | Pan · Zoom · Recenter |
-
-</details>
-
-<details>
-<summary><b>Scenario file format</b></summary>
-
-<br>
-
-YAML or JSON. Fields accept human names or the mathematical symbols from the
-derivations (`speed`/`V_P`, `center`/`C_0`, `radius`/`D_0`, `angles`/`A_E`).
-Inputs are validated for type, positivity, and speed feasibility before launch.
-
-```yaml
-mode: spiral
-predators:
-  - id: P1
-    pos: [13.56, 18.91]
-    speed: 18.34
-evaders:
-  - id: E1
-    pos: [15.81, 4.84]
-    speeds: [1.68, 2.91, 3.34]
-```
+`--mode` / `--count` / `--random` cannot be combined with `--scenario`.
 
 </details>
 
@@ -221,14 +177,14 @@ evaders:
 src/
   cli.py          ▏ command-line interface, argument validation
   compute/        ▏ pursuit mathematics
-    interception/ ▏   spiral · circular · targeting solvers
+    interception/ ▏   spiral, circular, targeting solvers
     ellipe/       ▏   elliptic-integral LUT + numba kernels
-  domain/         ▏ entities · motion · assignment · setups
+  domain/         ▏ entities, motion, assignment, setups
   loaders/        ▏ scenario parsing + schema validation
-  ui/             ▏ tactical HUD · grid · overlays · boot
-  core/           ▏ simulation loop · camera · input · render
-  config/         ▏ settings · theme · fonts
-scenarios/        ▏ default + example worlds
+  ui/             ▏ tactical HUD, grid, overlays, boot
+  core/           ▏ simulation loop, camera, input, render
+  config/         ▏ settings, theme, fonts
+scenarios/        ▏ default + example setups
 ```
 
 ---

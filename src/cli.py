@@ -55,7 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     source = parser.add_mutually_exclusive_group()
     source.add_argument(
         "-s", "--scenario", metavar="PATH", dest="scenario_path",
-        help="Load world from a .json/.yaml file (sets mode and count from the file).",
+        help="Load setup from a .json/.yaml file (sets mode and count from the file).",
     )
     source.add_argument(
         "-r", "--random", action="store_true",

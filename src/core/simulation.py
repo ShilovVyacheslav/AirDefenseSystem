@@ -46,6 +46,7 @@ class Simulation:
         self.input = None
 
     def initialize(self) -> None:
+        os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
         pygame.init()
         self.screen = pygame.display.set_mode((config.WINDOW_WIDTH, config.WINDOW_HEIGHT), pygame.NOFRAME)
         pygame.display.set_caption('A.D.S. Interface')
