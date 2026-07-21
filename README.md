@@ -158,10 +158,7 @@ ads -s scenarios/circular.yaml
 ads -m multiple_targeting -r -c 30 --respawn
 ```
 
-<details>
 <summary><b>All flags</b></summary>
-
-<br>
 
 | Flag | Description                                             |
 |------|---------------------------------------------------------|
@@ -172,12 +169,12 @@ ads -m multiple_targeting -r -c 30 --respawn
 | `--respawn` | Auto-respawn entities after all interceptions             |
 | `--no-matrix` | Disable the pursuit-matrix overlay                      |
 | `--no-preview` | Skip the boot/loading intro                                  |
+| `-o, --save-out [NAME]` | Record the run to `output/` as JSON (mode, source, setup, assignment, operation time, trajectories). Auto-named if NAME omitted |
+| `--save-interval SECONDS` | Trajectory sampling interval, used only with `--save-out` (default: 0.05) |
 | `--scenario-info` | Print scenario format reference and exit                |
 | `-h, --help` | Usage and exit                                          |
 
 `--mode` / `--count` / `--random` cannot be combined with `--scenario`.
-
-</details>
 
 ---
 

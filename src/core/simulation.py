@@ -8,6 +8,7 @@ from src.core.input_handler import InputHandler
 from src.core.modes import Mode, ModeRegistry
 from src.core.renderer import Renderer
 from src.domain.entity_manager import EntityManager
+from src.recorders.recorder import Recorder
 from src.ui.loading import show_loading_screen
 from src.ui.matrix_overlay import MatrixOverlay
 
@@ -30,6 +31,7 @@ class Simulation:
 
         self.scenario_data = None
         self.scenario_mode = None
+        self.scenario_path = app_config.scenario_path
         if app_config.scenario_path:
             self.scenario_data = loaders.load_scenario(app_config.scenario_path)
             self.scenario_mode = Mode(loaders.mode_from_scenario(self.scenario_data))
@@ -44,6 +46,11 @@ class Simulation:
         self.camera = None
         self.renderer = None
         self.input = None
+
+        self.save_out = app_config.save_out
+        self.save_out_name = app_config.save_out_name
+        self.save_interval = app_config.save_interval
+        self.recorder: Recorder | None = None
 
     def initialize(self) -> None:
         pygame.init()
@@ -74,12 +81,36 @@ class Simulation:
             self.matrix_overlay.reset(self.entity_manager)
         self.mode = mode
 
+        if self.save_out:
+            if use_data:
+                source, scenario_path = "scenario", (self.scenario_path if override is not None else None)
+            else:
+                source, scenario_path = "random", None
+            self.recorder = Recorder(mode, source, scenario_path, self.interception_time, self.save_interval)
+            self.recorder.capture_initial(self.entity_manager)
+        else:
+            self.recorder = None
+
     def update_state(self, dt: float) -> None:
         self.timer += dt
         self.entity_manager.update(dt)
+        if self.recorder is not None:
+            self.recorder.sample(self.timer, self.entity_manager.assignments)
         remaining = self.entity_manager.check_collisions()
         if self.respawn and remaining == 0:
             self.reset_entities(self.mode)
+        if self.recorder is not None and remaining == 0 and not self.recorder.is_finalized():
+            self.recorder.finalize(completed=True)
+            self._write_recording()
+
+    def _write_recording(self) -> None:
+        if self.recorder is None:
+            return
+        try:
+            path = self.recorder.save(self.save_out_name)
+            print(f"[ads] Run recorded -> {path}")
+        except OSError as exc:
+            print(f"[ads] WARNING: failed to write recording: {exc}")
 
     def run(self) -> None:
         self.initialize()
@@ -94,6 +125,9 @@ class Simulation:
             pygame.display.flip()
         self.cleanup()
 
-    @staticmethod
-    def cleanup() -> None:
+    def cleanup(self) -> None:
+        if self.recorder is not None and not self.recorder.is_finalized():
+            # Window closed before the wave completed; still save what we have.
+            self.recorder.finalize(completed=False)
+            self._write_recording()
         pygame.quit()

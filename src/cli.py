@@ -1,5 +1,7 @@
 import os
 
+from src.config.settings import DEFAULT_SAVE_INTERVAL
+
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import argparse
@@ -12,6 +14,8 @@ MODES = [m.value for m in Mode]
 MODE_CHOICES = MODES + [str(i) for i in range(1, len(MODES) + 1)]
 
 DEFAULT_MODE = Mode.SINGLE_SPIRAL.value
+
+_INVALID_FILENAME_CHARS = set('<>:"/\\|?*') | {chr(c) for c in range(32)}
 
 
 def _parse_mode(value: str) -> str:
@@ -34,6 +38,9 @@ class AppConfig:
     random: bool = False
     count: int | None = None
     scenario_path: str | None = None
+    save_out: bool = False
+    save_out_name: str | None = None
+    save_interval: float = DEFAULT_SAVE_INTERVAL
 
 
 class _ScenariosInfo(argparse.Action):
@@ -95,6 +102,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "-o", "--save-out", nargs="?", const="", default=None, metavar="NAME",
+        dest="save_out_value",
+        help=(
+            "Record the run to output/ as JSON. If NAME is given, it is "
+            "used as the filename (without extension); otherwise an "
+            "automatic name is used (mode_source_count_timestamp)."
+        ),
+    )
+    parser.add_argument(
+        "--save-interval", type=float, default=DEFAULT_SAVE_INTERVAL, metavar="SECONDS",
+        help=f"Trajectory sampling interval in seconds, used only with --save-out (default: {DEFAULT_SAVE_INTERVAL}).",
+    )
+
+    parser.add_argument(
         "--scenario-info", action=_ScenariosInfo,
         help="Print the scenario-file reference and exit.",
     )
@@ -118,6 +139,22 @@ def _validate(parser, args) -> None:
     if args.count is not None and args.count < 1:
         parser.error("--count must be a positive integer.")
 
+    if args.save_out_value:
+        name = args.save_out_value
+        if name.strip() != name or not name:
+            parser.error("--save-out NAME must not be empty or have leading/trailing whitespace.")
+        if name.startswith("-"):
+            parser.error("--save-out NAME must not start with '-'.")
+        if any(ch in _INVALID_FILENAME_CHARS for ch in name):
+            parser.error(
+                '--save-out NAME must not contain path separators or the characters < > : " / \\ | ? *.'
+            )
+        if len(name) > 200:
+            parser.error("--save-out NAME is too long (max 200 characters).")
+
+    if args.save_interval <= 0:
+        parser.error("--save-interval must be positive.")
+
 
 def parse_args(argv=None) -> AppConfig:
     parser = build_parser()
@@ -132,6 +169,9 @@ def parse_args(argv=None) -> AppConfig:
         random=args.random,
         count=args.count,
         scenario_path=args.scenario_path,
+        save_out=args.save_out_value is not None,
+        save_out_name=args.save_out_value if args.save_out_value else None,
+        save_interval=args.save_interval,
     )
 
 
