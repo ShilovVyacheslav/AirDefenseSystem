@@ -208,7 +208,8 @@ assignment algorithm. This project makes that mathematics interactive.
 
 ## ▏LICENSE
 
-All rights reserved. This code is proprietary and confidential.
+This project is proprietary software. See [LICENSE](LICENSE) for details.
 
-You may view this repository for reference only.
-No copying, distribution, or modification is permitted without explicit written permission.
+For commercial licensing, contact: shilovvaceslav16@gmail.com
+
+---
